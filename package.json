@@ -1,0 +1,26 @@
+{
+  "name": "cloud_ca-bugtracker",
+  "version": "1.0.0",
+  "description": "Cloud Class Assignment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "start:dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeandroFrazao/Cloud_Ca-BugTracker.git"
+  },
+  "author": "Leandro Frazão",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LeandroFrazao/Cloud_Ca-BugTracker/issues"
+  },
+  "homepage": "https://github.com/LeandroFrazao/Cloud_Ca-BugTracker#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.6.2",
+    "nodemon": "^2.0.6"
+  }
+}
