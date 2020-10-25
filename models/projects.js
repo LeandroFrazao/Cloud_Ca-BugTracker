@@ -18,7 +18,7 @@ module.exports = () => {
             if (id.length < 10) { //suppose that the lenght of id is lower than 10 , we try to find using slug
                 try {
                     const slug = id.toUpperCase();
-                    projects = await db.get(COLLECTION, { slug: slug});
+                    projects = await db.get(COLLECTION, { "slug": slug});
                 } catch (error) {
                     error = "Project Not Found!";
                     return error;
@@ -26,7 +26,7 @@ module.exports = () => {
             }
             if ( id.length > 10 || projects.length ==0 ){
                 try {
-                    projects = await db.get(COLLECTION, { _id: ObjectID(id) });  //use objectid to get id from mongodb
+                    projects = await db.get(COLLECTION, { "_id": ObjectID(id) });  //use objectid to get id from mongodb
                 } catch (error) {
                     error = "Project Not Found!";
                     return error; 
@@ -43,7 +43,6 @@ module.exports = () => {
         });
         return results.result;
     }; 
-
 
     return {
         get,

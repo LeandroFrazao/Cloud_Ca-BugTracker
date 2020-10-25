@@ -16,9 +16,9 @@ module.exports = () => {
             }}
         else {
             try {  //first try to find using _id, if it returns empty array, then try by email
-                users = await db.get(COLLECTION, { _id: ObjectID(id) }); //use objectid to get id from mongodb                
+                users = await db.get(COLLECTION, { "_id": ObjectID(id) }); //use objectid to get id from mongodb                
                 if (users.length == 0)
-                    users = await db.get(COLLECTION, { email: id.toLowerCase() }); //use objectid to get id from mongodb                
+                    users = await db.get(COLLECTION, { "email": id.toLowerCase() }); //use objectid to get id from mongodb                
          
             } catch (error) {
                 error = "User not Found!";
@@ -27,11 +27,12 @@ module.exports = () => {
         return users;
     };
 
-    const add = async(name,email, userType)=>{
+    const add = async(name,email,userType,key)=>{
         const results = await db.add(COLLECTION, {
             name:name,
             email:email,
-            userType:userType,
+            userType: userType,
+            key: key,
         });
         return results.result;
     }; 

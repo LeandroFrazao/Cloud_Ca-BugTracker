@@ -13,7 +13,8 @@ module.exports = () => {
         const name = req.body.name;
         const email = req.body.email;
         const userType = req.body.userType;
-        const result = await users.add(name,email,userType);
+        const key = req.body.key;
+        const result = await users.add(name,email,userType,key);
         res.json(result);
     };
 
