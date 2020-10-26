@@ -3,8 +3,9 @@ const COLLECTION = "users";
 const ObjectID = require("mongodb").ObjectID;
 
 module.exports = () => {
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const get = async (id = null) => {
-    console.log("Inside Users Model");
+    console.log(" --- usersModel.get --- ");
     var users = null; //initialize variable
     if (!id) {
       // check if id is null
@@ -28,8 +29,9 @@ module.exports = () => {
     }
     return users;
   };
-
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const add = async (name, email, userType, key) => {
+    console.log(" --- usersModel.add --- ");
     const results = await db.add(COLLECTION, {
       name: name,
       email: email,

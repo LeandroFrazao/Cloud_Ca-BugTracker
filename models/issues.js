@@ -6,6 +6,7 @@ const COLLECTION = "issues";
 const ObjectID = require("mongodb").ObjectID;
 
 module.exports = () => {
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const get = async (id = null) => {
     // find document or using issueNumber or issues _id
     console.log(" --- issuesModel.get --- ");
@@ -97,6 +98,18 @@ module.exports = () => {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   const add = async (slug, title, description, status) => {
     console.log(" --- issuesModel.add --- ");
+
+    if (
+      // check iff the status is valid according to the parameters bellow.
+      status != "open" &&
+      status != "wip" &&
+      status != "blocked" &&
+      status != "closed"
+    ) {
+      error = "Invalid Status. Must Be: open, wip, blocked or closed";
+      return { error: error };
+    }
+
     let project;
     let id_slug = null;
     project = await db.get("projects", { slug: slug.toUpperCase() });

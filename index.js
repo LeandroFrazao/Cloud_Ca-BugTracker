@@ -8,24 +8,19 @@ const usersController = require("./controller/users")();
 const projectsController = require("./controller/projects")();
 const issuesController = require("./controller/issues")();
 
-//const users = require('./models')();
-
 const app = (module.exports = express());
-
-//static page
 
 //login
 app.use((req, res, next) => {
   console.log("[%s] %s -- %s", new Date(), "Method: ", req.method, req.url);
 
   res.setHeader("Content-Type", "application/json");
-  //req.setHeader('Content-Type', 'application/json');
   next();
 });
 
 app.use(bodyParser.json());
 
-//USERS
+////////////////////USERS
 //get all users
 app.get("/users", usersController.getController);
 //add an user
@@ -35,7 +30,7 @@ app.get("/users/:id", usersController.getById);
 //BONUS : Hash the password/key
 //Use bcrypt to hash the password/key for the users
 
-//PROJECTS
+////////////////////PROJECTS
 //get all projects
 app.get("/projects", projectsController.getController);
 //add an user
@@ -43,7 +38,7 @@ app.post("/projects", projectsController.postController);
 //get a user  by slug or project _id
 app.get("/projects/:id", projectsController.getById);
 
-//ISSUES
+////////////////////ISSUES
 //Get all issues (bring comments with it)
 app.get("/issues", issuesController.getController);
 //Get individual issues by issueNumber or issue _id
@@ -55,7 +50,6 @@ app.get(
 );
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 // BONUS : Updated the status of an issue
-//{PUT} /projects/{projectSlug}/issues/{ISSUE-ID}/{STATUS}
 app.put(
   "/projects/:slug/issues/:issue_id/:status",
   issuesController.putUpdateStatusController
@@ -64,7 +58,7 @@ app.put(
 //Add new issues to a project individually
 app.post("/projects/:slug/issues", issuesController.postController);
 
-//COMMENTS
+////////////////////COMMENTS
 //Get all comments (optional)
 app.get("/comments/", issuesController.getAllCommentsController);
 //Get all comments for an author (email)

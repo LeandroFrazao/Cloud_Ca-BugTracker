@@ -3,9 +3,10 @@ const COLLECTION = "projects";
 const ObjectID = require("mongodb").ObjectID;
 
 module.exports = () => {
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const get = async (id = null) => {
+    console.log(" --- projectsModel.get --- ");
     // find document or using slug or project _id
-    console.log("Inside Projects Model");
     var projects = null;
     if (!id) {
       try {
@@ -37,8 +38,9 @@ module.exports = () => {
     }
     return projects;
   };
-
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const add = async (slug, name, description) => {
+    console.log(" --- projectsModel.add --- ");
     const results = await db.add(COLLECTION, {
       slug: slug,
       name: name,
