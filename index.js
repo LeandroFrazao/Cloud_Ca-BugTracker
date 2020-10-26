@@ -56,6 +56,10 @@ app.get(
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 // BONUS : Updated the status of an issue
 //{PUT} /projects/{projectSlug}/issues/{ISSUE-ID}/{STATUS}
+app.put(
+  "/projects/:slug/issues/:issue_id/:status",
+  issuesController.putUpdateStatusController
+);
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //Add new issues to a project individually
 app.post("/projects/:slug/issues", issuesController.postController);

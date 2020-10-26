@@ -15,11 +15,10 @@ module.exports = () => {
         issues = await db.get(COLLECTION);
         if (issues[0] == undefined) {
           error = "There are no Issues Registered";
-          return error;
+          return { error: error };
         }
       } catch (error) {
-        error = "Error: " + error;
-        return error;
+        return { error: error };
       }
     } else {
       try {
@@ -38,16 +37,15 @@ module.exports = () => {
         if (issues[0] == undefined) {
           // if query returns undefined means that there's no issue registered
           error = "There is no Issue (" + id + ") Registered";
-          return error;
+          return { error: error };
         }
       } catch (error) {
-        error = "Error: " + error;
-        return error;
+        return { error: error };
       }
     }
     return issues;
   };
-
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const getIssuesByProject = async (slug) => {
     console.log(" --- issuesModel.getIssuesByProject --- ");
     try {
@@ -56,10 +54,47 @@ module.exports = () => {
       return issues;
     } catch (error) {
       error = "Slug (" + slug + ") Not Found";
-      return error;
+      return { error: error };
     }
   };
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  const putUpdateStatus = async (slug, issue_id, status) => {
+    console.log(" --- issuesModel.putUpdateStatus --- ");
+    if (
+      status != "open" &&
+      status != "wip" &&
+      status != "blocked" &&
+      status != "closed"
+    ) {
+      error = "Invalid Status. Must Be: open, wip, blocked or closed";
+      return { error: error };
+    }
+    const issueNumber = slug + "-" + issue_id;
+    let issue = null;
+    const PIPELINE_PROJECT_ISSUENUMBER = [];
+    try {
+      const project = await db.get("projects", { slug: slug });
 
+      if (project[0] == undefined) {
+        error = "Slug (" + slug + ") Not Found";
+        return { error: error };
+      }
+
+      issue = await db.get(COLLECTION, { issueNumber: issueNumber });
+
+      if (issue[0] == undefined) {
+        error = "Issue ID (" + issue_id + ") Not Found";
+        return error;
+      }
+      const project_id = issue[0].project_id;
+      const newValue = { $set: { status: status } };
+      const projects = await db.update(COLLECTION, { project_id }, newValue);
+      return projects;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const add = async (slug, title, description, status) => {
     console.log(" --- issuesModel.add --- ");
     let project;
@@ -67,7 +102,7 @@ module.exports = () => {
     project = await db.get("projects", { slug: slug.toUpperCase() });
     if (project.length == 0) {
       error = "Slug (" + slug + ") Not Found";
-      return error;
+      return { error: error };
     }
     try {
       // count number of projects with same id
@@ -94,11 +129,10 @@ module.exports = () => {
       });
       return results.result;
     } catch (error) {
-      error = "Error: " + error;
-      return error;
+      return { error: error };
     }
   };
-
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const getComments = async (email = null) => {
     console.log(" --- issuesModel.getComments --- ");
     const PIPELINE_ALL_COMMENTS = [
@@ -137,19 +171,18 @@ module.exports = () => {
         return results;
       } catch (error) {
         error = "Email (" + email + ") Not Found";
-        return error;
+        return { error: error };
       }
     } else {
       try {
         const results = await db.aggregate(COLLECTION, PIPELINE_ALL_COMMENTS);
         return results;
       } catch (error) {
-        error = "Error: " + error;
-        return error;
+        return { error: error };
       }
     }
   };
-
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const getComment = async (issueNumber = null, comment_id = null) => {
     console.log(" --- issuesModel.getComment --- ");
     let issues;
@@ -158,13 +191,12 @@ module.exports = () => {
         issueNumber: issueNumber.toUpperCase(),
       });
     } catch (error) {
-      error = "Error: " + error;
-      return error;
+      return { error: error };
     }
     //console.log(issues[0] + " aqui");
     if (issues[0] == undefined) {
       error = "IssueNumber (" + issueNumber + ") Not Found";
-      return error;
+      return { error: error };
     }
 
     if (comment_id == null) {
@@ -172,7 +204,7 @@ module.exports = () => {
         return issues[0].comments;
       } else {
         error = "There are NO Comments on IssuenNumber (" + issueNumber + ")";
-        return error;
+        return { error: error };
       }
     } else if (comment_id != null) {
       PIPELINE_COMMENT_ID = [
@@ -202,15 +234,14 @@ module.exports = () => {
           return comment;
         } else {
           error = "Issue with Comment ID (" + comment_id + ") Not Found";
-          return error;
+          return { error: error };
         }
       } catch (error) {
-        error = "Error: " + error;
-        return error;
+        return { error: error };
       }
     }
   };
-
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   const addComment = async (issueNumber, id_or_email, text) => {
     console.log(" --- issuesModel.addComment --- ");
     let author = null;
@@ -227,11 +258,10 @@ module.exports = () => {
         author = authoremail;
         if (author[0] == undefined) {
           error = "User (" + id_or_email + ") Not Found";
-          return error;
+          return { error: error };
         }
       } catch (error) {
-        error = "Error: " + error;
-        return error;
+        return { error: error };
       }
     }
     let count = 0;
@@ -262,7 +292,7 @@ module.exports = () => {
         count = count_comments[0].counter + 1;
       } else {
         error = "IssueNumber (" + issueNumber + ") Not Found";
-        return error;
+        return { error: error };
       }
       const comments = {
         id: count,
@@ -278,14 +308,14 @@ module.exports = () => {
       );
       return results.result;
     } catch (error) {
-      error = "Error: " + error;
-      return error;
+      return { error: error };
     }
   };
 
   return {
     get,
     getIssuesByProject,
+    putUpdateStatus,
     add,
     getComments,
     getComment,

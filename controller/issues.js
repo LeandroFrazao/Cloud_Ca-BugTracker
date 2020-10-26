@@ -15,6 +15,14 @@ module.exports = () => {
     res.json(result);
   };
 
+  const putUpdateStatusController = async (req, res) => {
+    const slug = req.params.slug;
+    const issue_id = req.params.issue_id;
+    const status = req.params.status;
+    result = await issues.putUpdateStatus(slug, issue_id, status);
+    res.json(result);
+  };
+
   const postController = async (req, res) => {
     const slug = req.params.slug;
     const title = req.body.title;
@@ -53,6 +61,7 @@ module.exports = () => {
     getController,
     getByIdController,
     getIssuesByProjectController,
+    putUpdateStatusController,
     postController,
     getAllCommentsController,
     getCommentsByEmailController,
