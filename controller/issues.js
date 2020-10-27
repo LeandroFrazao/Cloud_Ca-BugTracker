@@ -50,10 +50,10 @@ module.exports = () => {
   };
 
   const postCommentController = async (req, res) => {
-    const issueNumber = await req.params.issueNumber;
-    const id_or_email = await req.params.author;
+    const issueNumber = req.params.issueNumber;
     const text = req.body.text;
-    const result = await issues.addComment(issueNumber, id_or_email, text);
+    const email = req.body.author;
+    const result = await issues.addComment(issueNumber, email, text);
     res.json(result);
   };
 

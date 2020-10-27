@@ -81,8 +81,8 @@ module.exports = () => {
 
     const results = await db.add(COLLECTION, {
       name: name,
-      email: email,
-      userType: userType,
+      email: email.toLowerCase(),
+      userType: userType.toLowerCase(),
       key: hashKey,
     });
     return results.result;

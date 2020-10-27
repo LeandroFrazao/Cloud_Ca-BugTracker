@@ -271,28 +271,21 @@ module.exports = () => {
     }
   };
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  const addComment = async (issueNumber, id_or_email, text) => {
+  const addComment = async (issueNumber, email, text) => {
     console.log(" --- issuesModel.addComment --- ");
     let author = null;
     try {
-      const authorid = await db.get("users", { _id: ObjectID(id_or_email) }); //first try if id_or_email is a valid user _id.
-      author = authorid;
-    } catch (error) {
-      author = null;
-    }
-    if (author == null || author[0] == undefined) {
-      // only executes the if block bellow if query returned an error.
-      try {
-        const authoremail = await db.get("users", { email: id_or_email }); // if is not an id, then try with email,
-        author = authoremail;
-        if (author[0] == undefined) {
-          error = "User (" + id_or_email + ") Not Found";
-          return { error: error };
-        }
-      } catch (error) {
+      const authoremail = await db.get("users", { email: email });
+      author = authoremail;
+
+      if (author.length == 0) {
+        error = "User (" + id_or_email + ") Not Found";
         return { error: error };
       }
+    } catch (error) {
+      return { error: error };
     }
+
     let count = 0;
     const PIPELINE_COUNT_PROJECT_COMMENTS = [
       { $match: { issueNumber: issueNumber.toUpperCase() } },

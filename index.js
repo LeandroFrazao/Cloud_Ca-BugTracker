@@ -72,7 +72,7 @@ app.get(
 );
 //Add new comments to an issue
 app.post(
-  "/issues/:issueNumber/comments/:author", //// author can be by user _id or email
+  "/issues/:issueNumber/comments/",
   issuesController.postCommentController
 );
 
