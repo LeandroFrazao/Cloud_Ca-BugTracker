@@ -1,30 +1,36 @@
 const db = require("../db")();
-const userHashKey = require("../user/userHashKey")();
+const userHashKey = require("../user/userHashKey")(); //BONUS : Hash the password/key
 
 const COLLECTION = "users";
 const ObjectID = require("mongodb").ObjectID;
 
 module.exports = () => {
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
+  /////Get all users "{GET} /users"/////////////////////////////////////////
+  ////Or                           ////////////////////////////////////////
+  /////Get individual users "{GET} /users/{EMAIL}" or { _id}//////////////
+  ///////////////////////////////////////////////////////////////////////
   const get = async (id = null) => {
     console.log(" --- usersModel.get --- ");
     var users = null; //initialize variable
-    if (!id) {
-      // check if id is null
-      try {
+
+    try {
+      if (!id) {
+        // check if id is null or empty
         users = await db.get(COLLECTION);
         if (users.length == 0) {
           error = "No Users Registered";
           return { error: error };
         }
-      } catch (error) {
-        return { error: error };
-      }
-    } else {
-      try {
+      } else {
+        const email = id.toLowerCase();
         if (ObjectID.isValid(id)) {
           //check if object is valid
-          users = await db.get(COLLECTION, { _id: ObjectID(id) }); //first try to find using _id, if it returns empty array, then try by email
+          PIPELINE_ID_OBJECT_OR_EMAIL = {
+            //if objectID(id) is valid, so the query is going to try to find BOTH _id or SLUG
+            $or: [{ _id: ObjectID(id) }, { email: email }],
+          };
+          users = await db.get(COLLECTION, PIPELINE_ID_OBJECT_OR_EMAIL); //first try to find using _id, if it returns empty array, then try by email
         } else {
           users = await db.get(COLLECTION, { email: id.toLowerCase() }); //use objectid to get id from mongodb
         }
@@ -33,22 +39,36 @@ module.exports = () => {
           return { error: error };
         }
         // console.log("Compare Key and HashKey, result is: " await userHashKey.compare("123456", users[0].key));  //to check hashKey
-      } catch (error) {
-        return { error: error };
       }
+      return users;
+    } catch (error) {
+      return { error: error };
     }
-    return users;
   };
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////
+  ////Add new users individually "{POST} /users"///////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
   const add = async (name, email, userType, key) => {
     console.log(" --- usersModel.add --- ");
     try {
+      if (!name || !email || !userType || !key) {
+        // check if all fields are not null, undefined or empty.
+        error =
+          "Fields name:(" +
+          name +
+          "), email:(" +
+          email +
+          "), userType:(" +
+          userType +
+          ") or key, MUST NOT BE EMPTY or UNDEFINED";
+        return { error: error };
+      }
       if (
         // check if the userType is valid according to the parameters bellow.
         userType != "user" &&
         userType != "admin"
       ) {
-        error = "Invalid User Type (" + userType + "). Must Be: user or admin";
+        error = "Invalid User Type (" + userType + "). MUST BE: user or admin.";
         return { error: error };
       }
       if (email.length < 5) {
@@ -61,31 +81,25 @@ module.exports = () => {
         error = "Key length (" + key.length + ") must be greater than 6";
         return { error: error };
       }
-    } catch (error) {
-      error = "Fields name, email, userType or key MUST NOT BE EMPTY";
-      return { error: error };
-    }
-
-    try {
       //check if email was already registered
       const users = await db.get(COLLECTION, { email: email }); //use objectid to get id from mongodb
       if (users.length > 0) {
         error = "Email (" + email + ") is already being Used.";
         return { error: error };
       }
+      //BONUS : Hash the password/key
+      let hashKey = await userHashKey.hash(key); // call a function to hash the user key
+
+      const results = await db.add(COLLECTION, {
+        name: name,
+        email: email.toLowerCase(),
+        userType: userType.toLowerCase(),
+        key: hashKey,
+      });
+      return results.result;
     } catch (error) {
       return { error: error };
     }
-
-    let hashKey = await userHashKey.hash(key); // call a function to hash the user key
-
-    const results = await db.add(COLLECTION, {
-      name: name,
-      email: email.toLowerCase(),
-      userType: userType.toLowerCase(),
-      key: hashKey,
-    });
-    return results.result;
   };
 
   return {

@@ -2,6 +2,9 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 module.exports = () => {
+  //////////////////////////////////////////////////////////////////////////////////
+  /////         HASH KEY                                           ////////////////
+  ////////////////////////////////////////////////////////////////////////////////
   const hash = async (key) => {
     console.log(" ---userHashKey.hash --- ");
     let hashKey = null;
@@ -10,7 +13,9 @@ module.exports = () => {
     });
     return hashKey;
   };
-
+  //////////////////////////////////////////////////////////////////////////////////
+  /////         COMPARE KEY                                        ////////////////
+  ////////////////////////////////////////////////////////////////////////////////
   const compare = async (key, hashKey) => {
     console.log(" ---userHashKey.compare --- ");
     let isEqual = null;

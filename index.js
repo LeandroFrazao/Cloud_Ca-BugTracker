@@ -1,3 +1,15 @@
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\                                                                        \\\\\\\\\\\\\\\\\\\
+//\\                                                                        \\\\\\\\\\\\\\\\\\\
+//\\     Cloud Based Web Applications: CA Project Part 1                    \\\\\\\\\\\\\\\\\\\
+//\\     Lecturer: Dave Albert                                              \\\\\\\\\\\\\\\\\\\
+//\\                                                                        \\\\\\\\\\\\\\\\\\\
+//\\     Student: Leandro Frazão                                            \\\\\\\\\\\\\\\\\\\
+//\\     Studend Number: 2020094                                            \\\\\\\\\\\\\\\\\\\
+//\\                                                                        \\\\\\\\\\\\\\\\\\\
+//\\                                                           October,2020 \\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 const express = require("express");
 const bodyParser = require("body-parser");
 
@@ -20,36 +32,45 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
-////////////////////USERS
-//get all users
-app.get("/users", usersController.getController);
-//add an user
-app.post("/users", usersController.postController);
-//get a user by email or user _id
-app.get("/users/:id", usersController.getById);
-//BONUS : Hash the password/key
-//Use bcrypt to hash the password/key for the users
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\                       ROUTES                                           \\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-////////////////////PROJECTS
-//get all projects
+//////////////////////////////////////////////////////////////////////////////////
+/////         USERS                                              ////////////////
+////////////////////////////////////////////////////////////////////////////////
+//------------> get all users
+app.get("/users", usersController.getController);
+//------------> add an user
+app.post("/users", usersController.postController);
+//------------> get a user by email or user _id
+app.get("/users/:id", usersController.getById);
+
+//////////////////////////////////////////////////////////////////////////////////
+/////         PROJECTS                                           ////////////////
+////////////////////////////////////////////////////////////////////////////////
+//------------> get all projects
 app.get("/projects", projectsController.getController);
 //add an user
 app.post("/projects", projectsController.postController);
-//get a user  by slug or project _id
+//------------> get a user  by slug or project _id
 app.get("/projects/:id", projectsController.getById);
 
-////////////////////ISSUES
-//Get all issues (bring comments with it)
+//////////////////////////////////////////////////////////////////////////////////
+/////         ISSUES                                             ////////////////
+////////////////////////////////////////////////////////////////////////////////
+//------------> Get all issues (bring comments with it)
 app.get("/issues", issuesController.getController);
-//Get individual issues by issueNumber or issue _id
+//------------> Get individual issues by issueNumber or issue _id
 app.get("/issues/:id", issuesController.getByIdController);
-//Get all issues for a project
+//------------> Get all issues for a project
 app.get(
   "/projects/:slug/issues",
   issuesController.getIssuesByProjectController
 );
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// BONUS : Updated the status of an issue
+///////////////////////////////////////////
+// BONUS : Updated the status of an issue/
+/////////////////////////////////////////
 app.put(
   "/projects/:slug/issues/:issue_id/:status",
   issuesController.putUpdateStatusController
@@ -57,20 +78,21 @@ app.put(
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //Add new issues to a project individually
 app.post("/projects/:slug/issues", issuesController.postController);
-
-////////////////////COMMENTS
-//Get all comments (optional)
+//////////////////////////////////////////////////////////////////////////////////
+/////         COMMENTS                                           ////////////////
+////////////////////////////////////////////////////////////////////////////////
+//------------> Get all comments (optional)
 app.get("/comments/", issuesController.getAllCommentsController);
-//Get all comments for an author (email)
+//------------> Get all comments for an author (email)
 app.get("/comments/:email", issuesController.getCommentsByEmailController);
-//Get all comments for an issue
+//------------> Get all comments for an issue
 app.get("/issues/:issueNumber/comments", issuesController.getCommentController);
-//Get individual comments for an issue
+//------------> Get individual comments for an issue
 app.get(
   "/issues/:issueNumber/comments/:comment_id",
   issuesController.getCommentByIdController
 );
-//Add new comments to an issue
+//------------> Add new comments to an issue
 app.post(
   "/issues/:issueNumber/comments/",
   issuesController.postCommentController

@@ -3,51 +3,84 @@ const COLLECTION = "projects";
 const ObjectID = require("mongodb").ObjectID;
 
 module.exports = () => {
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////
+  ///Get all projects "{GET} /projects"////////////////////////////////////////////////
+  ///Or                               ////////////////////////////////////////////////
+  ///Get individual projects "{GET} /projects/{SLUG}" or {_id}///////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
   const get = async (id = null) => {
     console.log(" --- projectsModel.get --- ");
     // find document or using slug or project _id
     let projects = null;
-    if (!id) {
-      try {
+    try {
+      if (!id) {
         projects = await db.get(COLLECTION, {});
         if (projects.length == 0) {
           error = "There are no Projects Registered";
           return { error: error };
         }
-      } catch (error) {
-        return { error: error };
-      }
-      return projects;
-    } else {
-      try {
+        return projects;
+      } else {
+        const slug = id.toUpperCase();
         if (ObjectID.isValid(id)) {
           //check if object is valid
-          projects = await db.get(COLLECTION, { _id: ObjectID(id) }); //use objectid to get id from mongodb
+          PIPELINE_ID_OBJECT_OR_SLUG = {
+            //if objectID(id) is valid, so the query is going to try to find BOTH _id or SLUG
+            $or: [{ _id: ObjectID(id) }, { slug: slug }],
+          };
+          projects = await db.get(COLLECTION, PIPELINE_ID_OBJECT_OR_SLUG); //use objectid to get id from mongodb
         } else {
-          const slug = id.toUpperCase();
           projects = await db.get(COLLECTION, { slug: slug });
         }
         if (projects.length == 0) {
-          error = "Project Not Found!";
+          error = "Project (" + id + ") Not Found!";
           return { error: error };
         }
-      } catch (error) {
-        return { error: error };
+        return projects;
       }
+    } catch (error) {
+      return { error: error };
     }
-
-    return projects;
   };
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////
+  ///Add new Projects individually "{POST} /projects"//////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
   const add = async (slug, name, description) => {
     console.log(" --- projectsModel.add --- ");
-    const results = await db.add(COLLECTION, {
-      slug: slug.toUpperCase(),
-      name: name,
-      description: description,
-    });
-    return results.result;
+    try {
+      if (!slug || !name || !description) {
+        // check if all fields are not null, undefined or empty.
+        error =
+          "Fields slug:(" +
+          slug +
+          "), name:(" +
+          name +
+          "), description:(" +
+          description +
+          "), MUST NOT BE EMPTY or UNDEFINED!";
+        return { error: error };
+      }
+
+      if (/[^a-z]/i.test(slug)) {
+        //check if slug contains only letters, if not, returns a error message
+        console.log(/[^a-z]/i.test(slug));
+        error = "Field slug:(" + slug + ") MUST BE ONLY LETTERS!";
+        return { error: error };
+      }
+      const project = await db.get(COLLECTION, { slug: slug.toUpperCase() });
+      if (project.length > 0) {
+        error = "Slug (" + slug.toUpperCase() + ") is already being used.";
+        return { error: error };
+      }
+      const results = await db.add(COLLECTION, {
+        slug: slug.toUpperCase(),
+        name: name,
+        description: description,
+      });
+      return results.result;
+    } catch (error) {
+      return { error: error };
+    }
   };
 
   return {
