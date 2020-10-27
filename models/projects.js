@@ -7,12 +7,15 @@ module.exports = () => {
   const get = async (id = null) => {
     console.log(" --- projectsModel.get --- ");
     // find document or using slug or project _id
-    var projects = null;
+    let projects = null;
     if (!id) {
       try {
         projects = await db.get(COLLECTION, {});
+        if (projects.length == 0) {
+          error = "There are no Projects Registered";
+          return { error: error };
+        }
       } catch (error) {
-        error = "There no Projects Registered";
         return { error: error };
       }
       return projects;
@@ -20,18 +23,18 @@ module.exports = () => {
       if (id.length < 10) {
         //suppose that the lenght of id is lower than 10 , we try to find using slug
         try {
-          const slug = id.toUpperCase();
-          projects = await db.get(COLLECTION, { slug: slug });
+          if (ObjectID.isValid(id)) {
+            //check if object is valid
+            projects = await db.get(COLLECTION, { _id: ObjectID(id) }); //use objectid to get id from mongodb
+          } else {
+            const slug = id.toUpperCase();
+            projects = await db.get(COLLECTION, { slug: slug });
+          }
+          if (projects.length == 0) {
+            error = "Project Not Found!";
+            return { error: error };
+          }
         } catch (error) {
-          error = "Project Not Found!";
-          return { error: error };
-        }
-      }
-      if (id.length > 10 || projects.length == 0) {
-        try {
-          projects = await db.get(COLLECTION, { _id: ObjectID(id) }); //use objectid to get id from mongodb
-        } catch (error) {
-          error = "Project Not Found!";
           return { error: error };
         }
       }
