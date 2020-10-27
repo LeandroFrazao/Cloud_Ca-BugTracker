@@ -202,6 +202,10 @@ module.exports = () => {
     } else {
       try {
         const results = await db.aggregate(COLLECTION, PIPELINE_ALL_COMMENTS);
+        if (results.length == 0) {
+          error = "There are no Comments Registered";
+          return { error: error };
+        }
         return results;
       } catch (error) {
         return { error: error };
