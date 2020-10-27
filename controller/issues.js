@@ -1,6 +1,6 @@
-module.exports = () => {
-  const issues = require("../models/issues")();
+const issues = require("../models/issues")();
 
+module.exports = () => {
   const getController = async (req, res) => {
     res.json(await issues.get());
   };

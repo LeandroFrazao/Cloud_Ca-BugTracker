@@ -1,5 +1,3 @@
-const { on } = require("nodemon");
-
 const db = require("../db")();
 const COLLECTION = "issues";
 
@@ -23,18 +21,13 @@ module.exports = () => {
       }
     } else {
       try {
-        // if user issue _id instead of slug,
-
-        issues = await db.get(COLLECTION, { _id: ObjectID(id) }); //use query find issue _id from mongodb
-      } catch (error) {
-        issues = null; //if it catch an erro on query with issue _id, issues gets null.
-      }
-    }
-    if (issues == null) {
-      // if issues is null, now the query will try with issueNumber
-      try {
-        const issuenum = id.toUpperCase();
-        issues = await db.get(COLLECTION, { issueNumber: issuenum });
+        // if user use issue _id instead of slug,
+        if (ObjectID.isValid(id)) {
+          issues = await db.get(COLLECTION, { _id: ObjectID(id) }); //use query find issue _id from mongodb
+        } else {
+          const issuenum = id.toUpperCase(); //or use query to find issueNumber from mongodb
+          issues = await db.get(COLLECTION, { issueNumber: issuenum });
+        }
         if (issues[0] == undefined) {
           // if query returns undefined means that there's no issue registered
           error = "There is no Issue (" + id + ") Registered";
@@ -50,11 +43,25 @@ module.exports = () => {
   const getIssuesByProject = async (slug) => {
     console.log(" --- issuesModel.getIssuesByProject --- ");
     try {
-      const project = await db.get("projects", { slug: slug.toUpperCase() });
-      const issues = await db.get(COLLECTION, { project_id: project[0]._id });
+      const PIPELINE_SLUG_ISSUES = [
+        {
+          $lookup: {
+            from: "issues",
+            localField: "_id",
+            foreignField: "project_id",
+            as: "issue",
+          },
+        },
+        { $match: { slug: slug.toUpperCase() } },
+      ];
+
+      const issues = await db.aggregate("projects", PIPELINE_SLUG_ISSUES);
+      if (issues[0] == undefined) {
+        error = "Slug (" + slug + ") Not Found";
+        return { error: error };
+      }
       return issues;
     } catch (error) {
-      error = "Slug (" + slug + ") Not Found";
       return { error: error };
     }
   };
@@ -67,7 +74,10 @@ module.exports = () => {
       status != "blocked" &&
       status != "closed"
     ) {
-      error = "Invalid Status. Must Be: open, wip, blocked or closed";
+      error =
+        "Invalid Status (" +
+        status +
+        "). Must Be: open, wip, blocked or closed";
       return { error: error };
     }
     const issueNumber = slug + "-" + issue_id;
@@ -106,7 +116,10 @@ module.exports = () => {
       status != "blocked" &&
       status != "closed"
     ) {
-      error = "Invalid Status. Must Be: open, wip, blocked or closed";
+      error =
+        "Invalid Status (" +
+        status +
+        "). Must Be: open, wip, blocked or closed";
       return { error: error };
     }
 
@@ -206,7 +219,6 @@ module.exports = () => {
     } catch (error) {
       return { error: error };
     }
-    //console.log(issues[0] + " aqui");
     if (issues[0] == undefined) {
       error = "IssueNumber (" + issueNumber + ") Not Found";
       return { error: error };
