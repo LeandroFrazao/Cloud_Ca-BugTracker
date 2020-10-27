@@ -67,13 +67,14 @@ module.exports = () => {
         error = "Field slug:(" + slug + ") MUST BE ONLY LETTERS!";
         return { error: error };
       }
-      const project = await db.get(COLLECTION, { slug: slug.toUpperCase() });
+      slug = slug.toUpperCase();
+      const project = await db.get(COLLECTION, { slug: slug });
       if (project.length > 0) {
-        error = "Slug (" + slug.toUpperCase() + ") is already being used.";
+        error = "Slug (" + slug + ") is already being used.";
         return { error: error };
       }
       const results = await db.add(COLLECTION, {
-        slug: slug.toUpperCase(),
+        slug: slug,
         name: name,
         description: description,
       });

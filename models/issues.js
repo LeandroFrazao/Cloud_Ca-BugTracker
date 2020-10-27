@@ -52,6 +52,7 @@ module.exports = () => {
   const getIssuesByProject = async (slug) => {
     console.log(" --- issuesModel.getIssuesByProject --- ");
     try {
+      slug = slug.toUpperCase();
       const PIPELINE_SLUG_ISSUES = [
         {
           $lookup: {
@@ -61,7 +62,7 @@ module.exports = () => {
             as: "issue",
           },
         },
-        { $match: { slug: slug.toUpperCase() } },
+        { $match: { slug: slug } },
       ];
 
       const issues = await db.aggregate("projects", PIPELINE_SLUG_ISSUES);
@@ -70,7 +71,7 @@ module.exports = () => {
         return { error: error };
       }
       if (issues[0].issue.length == 0) {
-        error = "Issues for slug (" + slug.toUpperCase() + ") NOT FOUND!";
+        error = "Issues for slug (" + slug + ") NOT FOUND!";
         return { error: error };
       }
       return issues;
