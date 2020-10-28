@@ -1,5 +1,5 @@
 const db = require("../db")();
-const userHashKey = require("../user/userHashKey")(); //BONUS : Hash the password/key
+const userHashKey = require("../user/user")(); //BONUS : Hash the password/key
 
 const COLLECTION = "users";
 const ObjectID = require("mongodb").ObjectID;
