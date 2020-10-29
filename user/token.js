@@ -4,12 +4,11 @@ const userHashKey = require("./user")();
 const crypto = require("crypto");
 
 exports.login = async (req, res, next) => {
-  console.log("hey");
   const email = req.body.email;
   try {
     const user = await db.get("users", { email: email });
-
-    if (!user) {
+    console.log(user.length);
+    if (!user || user.length == 0) {
       error = "User not Found!";
       return res.status(401).json({ error: error });
     }
@@ -35,7 +34,6 @@ exports.login = async (req, res, next) => {
     console.log((module.exports.RANDOM_TOKEN = RANDOM_TOKEN));
     res.send();
   } catch (error) {
-    console.log("aqui");
     res.status(500).json({ error: error });
   }
 };
