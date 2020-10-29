@@ -19,70 +19,39 @@ const port = process.env.PORT || 3000;
 const usersController = require("./controller/users")();
 const projectsController = require("./controller/projects")();
 const issuesController = require("./controller/issues")();
-const user = require("./user/user")();
+const token = require("./user/token");
 
+require("dotenv").config();
+const cookieParser = require("cookie-parser");
 const app = (module.exports = express());
 
 //login
 app.use((req, res, next) => {
   console.log("[%s] %s -- %s", new Date(), "Method: ", req.method, req.url);
-
-  //  res.setHeader("Content-Type", "application/json");
   next();
 });
+const { login } = require("./user/token");
+app.use(cookieParser());
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       AUTHENTICATION                                   \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 const auth = require("./user/auth");
-/*app.use(async (req, res, next) => {
-  const FailedAuthMessage = {
-    error: "Failed Authentication",
-    message: "Unauthorized",
-    code: "xxx",
-  };
 
-  //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-  //\\     In Postman(or similar) Headers                                   \\\\\\\\\\\\\\\\\\\
-  //\\ USER-->    define key: x-api-user     Value: your email              \\\\\\\\\\\\\\\\\\\
-  //\\ KEY-->    define key: x-api-key     Value: your password             \\\\\\\\\\\\\\\\\\\
-  //\\                                                                      \\\\\\\\\\\\\\\\\\\
-  //\\    For demonstration/test purpose:                                   \\\\\\\\\\\\\\\\\\\
-  //\\    email:dalbert@cct.ie                                              \\\\\\\\\\\\\\\\\\\
-  //\\    Password: 123456   (all users were registered with same password) \\\\\\\\\\\\\\\\\\\
-  //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-  const suppliedUser = req.headers["x-api-user"];
-  req.headers["x-fowarded-for"] || req.connection.remoteAddress;
-  const suppliedKey = req.headers["x-api-key"];
-  req.headers["x-fowarded-for"] || req.connection.remoteAddress;
-
-  //check pre-shared key
-  if (!suppliedKey || !suppliedUser) {
-    console.log(
-      "[%s] Failed Authentication -- %s, No Key Supplied",
-      new Date(),
-      suppliedUser
-    );
-    FailedAuthMessage.code = "1";
-    return res.status(401).json(FailedAuthMessage);
-  }
-
-  const userKey = await user.getByUserKey(suppliedUser, suppliedKey);
-  if (!userKey) {
-    console.log(
-      " [%s] Failed Authentication -- %s, BAD Key Supplied",
-      new Date(),
-      suppliedUser
-    );
-    FailedAuthMessage.code = "2";
-    return res.status(401).json(FailedAuthMessage);
-  }
-  next();
-});
-*/
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\     In Postman(or similar) Headers                                   \\\\\\\\\\\\\\\\\\\
+//\\ USER-->    define key: x-api-user     Value: your email              \\\\\\\\\\\\\\\\\\\
+//\\ KEY-->    define key: x-api-key     Value: your password             \\\\\\\\\\\\\\\\\\\
+//\\                                                                      \\\\\\\\\\\\\\\\\\\
+//\\    For demonstration/test purpose:                                   \\\\\\\\\\\\\\\\\\\
+//\\    email:dalbert@cct.ie                                              \\\\\\\\\\\\\\\\\\\
+//\\    Password: 123456   (all users were registered with same password) \\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 app.use(bodyParser.json());
+
+app.post("/login", login);
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       ROUTES                                           \\\\\\\\\\\\\\\\\\\
@@ -92,6 +61,7 @@ app.use(bodyParser.json());
 /////         USERS                                              ////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //------------> get all users
+
 app.get("/users", auth, usersController.getController);
 //------------> add an user
 app.post("/users", auth, usersController.postController);

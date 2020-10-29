@@ -1,17 +1,19 @@
 const jwt = require("jsonwebtoken");
-
+const token = require("./token");
 module.exports = (req, res, next) => {
   try {
-    console.log(req.headers.authorization);
-    const token = req.headers.authorization.split(" ")[1];
-    const decodedToken = jwt.verify(token, "RANDOM_TOKEN");
-    const userId = decodedToken.userId;
-    console.log("req.body.email");
-    if (req.body.userId !== userId) {
-      throw "Invalid user ID";
-    } else {
-      next();
+    //console.log(req.headers.authorization);
+    //const token = req.headers.authorization.split(" ")[1];
+    let accessToken = req.cookies.jwt;
+    console.log(req.cookies.jwt);
+    if (!accessToken) {
+      return res.status(403).send({ error: "Invalid Token" });
     }
+    console.log(token.RANDOM_TOKEN);
+    let RANDOM_TOKEN = token.RANDOM_TOKEN;
+    const decodedToken = jwt.verify(accessToken, RANDOM_TOKEN);
+    console.log(decodedToken);
+    next();
   } catch (error) {
     error = "Invalid request!";
     return res.status(401).json({ error: error });

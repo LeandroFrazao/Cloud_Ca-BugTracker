@@ -39,9 +39,10 @@ module.exports = () => {
       const hashedKey = user[0].key;
       const verifyKey = await compare(suppliedKey, hashedKey);
       if (!verifyKey) {
-        console.log("2: Bad key");
+        console.log("2: Wrong key");
         return null;
       }
+
       return user[0];
     } catch (error) {
       return { error: error };
