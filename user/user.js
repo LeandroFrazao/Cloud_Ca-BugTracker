@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const db = require("../db")();
+const jwt = require("jsonwebtoken");
 const saltRounds = 10;
 
 module.exports = () => {

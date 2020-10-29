@@ -34,7 +34,9 @@ app.use((req, res, next) => {
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       AUTHENTICATION                                   \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-app.use(async (req, res, next) => {
+
+const auth = require("./user/auth");
+/*app.use(async (req, res, next) => {
   const FailedAuthMessage = {
     error: "Failed Authentication",
     message: "Unauthorized",
@@ -78,6 +80,7 @@ app.use(async (req, res, next) => {
   }
   next();
 });
+*/
 
 app.use(bodyParser.json());
 
@@ -89,32 +92,33 @@ app.use(bodyParser.json());
 /////         USERS                                              ////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //------------> get all users
-app.get("/users", usersController.getController);
+app.get("/users", auth, usersController.getController);
 //------------> add an user
-app.post("/users", usersController.postController);
+app.post("/users", auth, usersController.postController);
 //------------> get a user by email or user _id
-app.get("/users/:id", usersController.getById);
+app.get("/users/:id", auth, usersController.getById);
 
 //////////////////////////////////////////////////////////////////////////////////
 /////         PROJECTS                                           ////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //------------> get all projects
-app.get("/projects", projectsController.getController);
+app.get("/projects", auth, projectsController.getController);
 //add an user
-app.post("/projects", projectsController.postController);
+app.post("/projects", auth, projectsController.postController);
 //------------> get a user  by slug or project _id
-app.get("/projects/:id", projectsController.getById);
+app.get("/projects/:id", auth, projectsController.getById);
 
 //////////////////////////////////////////////////////////////////////////////////
 /////         ISSUES                                             ////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //------------> Get all issues (bring comments with it)
-app.get("/issues", issuesController.getController);
+app.get("/issues", auth, issuesController.getController);
 //------------> Get individual issues by issueNumber or issue _id
-app.get("/issues/:id", issuesController.getByIdController);
+app.get("/issues/:id", auth, issuesController.getByIdController);
 //------------> Get all issues for a project
 app.get(
   "/projects/:slug/issues",
+  auth,
   issuesController.getIssuesByProjectController
 );
 ///////////////////////////////////////////
@@ -122,29 +126,40 @@ app.get(
 /////////////////////////////////////////
 app.put(
   "/projects/:slug/issues/:issue_id/:status",
+  auth,
   issuesController.putUpdateStatusController
 );
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //Add new issues to a project individually
-app.post("/projects/:slug/issues", issuesController.postController);
+app.post("/projects/:slug/issues", auth, issuesController.postController);
 
 //////////////////////////////////////////////////////////////////////////////////
 /////         COMMENTS                                           ////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //------------> Get all comments (optional)
-app.get("/comments/", issuesController.getAllCommentsController);
+app.get("/comments/", auth, issuesController.getAllCommentsController);
 //------------> Get all comments for an author (email)
-app.get("/comments/:email", issuesController.getCommentsByEmailController);
+app.get(
+  "/comments/:email",
+  auth,
+  issuesController.getCommentsByEmailController
+);
 //------------> Get all comments for an issue
-app.get("/issues/:issueNumber/comments", issuesController.getCommentController);
+app.get(
+  "/issues/:issueNumber/comments",
+  auth,
+  issuesController.getCommentController
+);
 //------------> Get individual comments for an issue
 app.get(
   "/issues/:issueNumber/comments/:comment_id",
+  auth,
   issuesController.getCommentByIdController
 );
 //------------> Add new comments to an issue
 app.post(
   "/issues/:issueNumber/comments/",
+  auth,
   issuesController.postCommentController
 );
 
