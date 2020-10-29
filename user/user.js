@@ -31,7 +31,8 @@ module.exports = () => {
   const getByUserKey = async (suppliedUser, suppliedKey) => {
     if (!suppliedUser || !suppliedKey) {
       console.log("1: Missing User/Key");
-      return null;
+      error = "Missing User/Key!";
+      return { error: error };
     }
     try {
       const user = await db.get("users", { email: suppliedUser });
@@ -39,7 +40,8 @@ module.exports = () => {
       const verifyKey = await compare(suppliedKey, hashedKey);
       if (!verifyKey) {
         console.log("2: Bad key");
-        return null;
+        error = "Wrong Password";
+        return { error: error };
       }
       return user[0];
     } catch (error) {
