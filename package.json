@@ -23,6 +23,7 @@
     "express": "^4.17.1",
     "heroku": "^7.46.2",
     "mongodb": "^3.6.2",
+    "node-forge": "^0.10.0",
     "nodemon": "^2.0.6"
   }
 }
