@@ -31,7 +31,7 @@ exports.login = async (req, res, next) => {
       Information: "This token below was sent in a cookie named jwt",
       token: token,
     });
-    console.log((module.exports.RANDOM_TOKEN = RANDOM_TOKEN));
+    module.exports.RANDOM_TOKEN = RANDOM_TOKEN;
     res.send();
   } catch (error) {
     res.status(500).json({ error: error });
