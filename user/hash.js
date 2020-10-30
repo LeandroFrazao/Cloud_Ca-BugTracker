@@ -29,29 +29,8 @@ module.exports = () => {
     return isEqual;
   };
 
-  const getByUserKey = async (suppliedUser, suppliedKey) => {
-    if (!suppliedUser || !suppliedKey) {
-      console.log("1: Missing User/Key");
-      return null;
-    }
-    try {
-      const user = await db.get("users", { email: suppliedUser });
-      const hashedKey = user[0].key;
-      const verifyKey = await compare(suppliedKey, hashedKey);
-      if (!verifyKey) {
-        console.log("2: Wrong key");
-        return null;
-      }
-
-      return user[0];
-    } catch (error) {
-      return { error: error };
-    }
-  };
-
   return {
     hash,
     compare,
-    getByUserKey,
   };
 };
