@@ -7,9 +7,10 @@ const crypto = require("crypto");
 //\\                       LOGIN                                            \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 exports.login = async (req, res, next) => {
-  let email = req.body.email;
-  email = email.toLowerCase();
   try {
+    let email = req.body.email;
+    email = email.toLowerCase();
+
     // check if the email exist in the database.
     const user = await db.get("users", { email: email });
     if (!user || user.length == 0) {
@@ -32,7 +33,7 @@ exports.login = async (req, res, next) => {
       expiresIn: "24h",
     });
     // generate a cookie containing the token
-    res.cookie("jwt", token, { secure: false, httpOnly: true });
+    res.cookie("jwt", token, { secure: true, httpOnly: true });
     res.status(200).json({
       user: user[0].email,
       Information: "This token below was sent in a cookie named jwt",
