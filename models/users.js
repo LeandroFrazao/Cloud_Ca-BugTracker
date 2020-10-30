@@ -83,6 +83,7 @@ module.exports = () => {
         return { error: error };
       }
       //check if email was already registered
+      email = email.toLowerCase();
       const users = await db.get(COLLECTION, { email: email }); //use objectid to get id from mongodb
       if (users.length > 0) {
         error = "Email (" + email + ") is already being Used.";

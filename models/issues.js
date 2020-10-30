@@ -24,7 +24,6 @@ module.exports = () => {
         // if user use issue _id instead of slug,
         const issuenum = id.toUpperCase();
         if (ObjectID.isValid(id)) {
-          console.log(id);
           //check if object is valid
           PIPELINE_ID_OBJECT_OR_ISSUENUMBER = {
             //if objectID(id) is valid, so the query is going to try to find BOTH _id or IssueNumber

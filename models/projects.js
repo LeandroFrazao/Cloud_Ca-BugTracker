@@ -64,7 +64,6 @@ module.exports = () => {
 
       if (/[^a-z]/i.test(slug)) {
         //check if slug contains only letters, if not, returns a error message
-        console.log(/[^a-z]/i.test(slug));
         error = "Field slug:(" + slug + ") MUST BE ONLY LETTERS!";
         return { error: error };
       }
