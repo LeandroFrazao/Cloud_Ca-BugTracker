@@ -25,7 +25,7 @@ exports.login = async (req, res, next) => {
       error = "Incorrect Password!";
       return res.status(401).json({ error: error });
     }
-    // create a random string
+    // create a random string to be included in the token.
     const RANDOM_TOKEN = crypto.randomBytes(15).toString("HEX");
     //token is generate using user id and the random string. the token is set to be valid for 24 hours, while the user is using the API
     const token = jwt.sign({ userId: user[0]._id }, RANDOM_TOKEN, {
@@ -38,7 +38,9 @@ exports.login = async (req, res, next) => {
       Information: "This token below was sent in a cookie named jwt",
       token: token,
     });
-    // export the random the string to be used for authentication (auth.js)
+    // export the random the string to be used for authentication (auth.js).
+    //Need to be observed that the cookie only is valid, while the user is using the API.
+    //If the user closes the browser or app that is using the api, this variable "RANDOM_TOKEN" gets UNDEFINED value.
     module.exports.RANDOM_TOKEN = RANDOM_TOKEN;
     res.send();
   } catch (error) {
