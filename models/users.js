@@ -1,6 +1,5 @@
 const db = require("../db")();
-const userHashKey = require("../user/hash"); //BONUS : Hash the password/key
-
+const userHashKey = require("../user/hash")(); //BONUS : Hash the password/key
 const COLLECTION = "users";
 const ObjectID = require("mongodb").ObjectID;
 
@@ -72,25 +71,30 @@ module.exports = () => {
         error = "Invalid User Type (" + userType + "). MUST BE: user or admin.";
         return { error: error };
       }
+
       if (email.length < 5) {
         // a@a.a minimum length required for email is 5 characters
         error = "Email (" + email + ") is invalid";
         return { error: error };
       }
+      console.log("aqui");
       if (key.length < 6) {
         //  minimum length required for key is 6 characters
-        error = "Key length (" + key.length + ") must be greater than 6";
+        error = "Key length (" + key.length + ") must be greater than 5";
         return { error: error };
       }
       //check if email was already registered
+      email = email.toLowerCase();
       const users = await db.get(COLLECTION, { email: email }); //use objectid to get id from mongodb
+
       if (users.length > 0) {
         error = "Email (" + email + ") is already being Used.";
         return { error: error };
       }
+      console.log(key);
       //BONUS : Hash the password/key
       let hashKey = await userHashKey.hash(key); // call a function to hash the user key
-
+      console.log("aqui2");
       const results = await db.add(COLLECTION, {
         name: name,
         email: email.toLowerCase(),

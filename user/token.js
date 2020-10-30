@@ -32,7 +32,7 @@ exports.login = async (req, res, next) => {
       expiresIn: "24h",
     });
     // generate a cookie containing the token
-    res.cookie("jwt", token, { secure: true, httpOnly: true });
+    res.cookie("jwt", token, { secure: false, httpOnly: true });
     res.status(200).json({
       user: user[0].email,
       Information: "This token below was sent in a cookie named jwt",
