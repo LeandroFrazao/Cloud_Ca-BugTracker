@@ -21,11 +21,11 @@ exports.login = async (req, res, next) => {
       error = "Incorrect Password!";
       return res.status(401).json({ error: error });
     }
-    const RANDOM_TOKEN = crypto.randomBytes(5).toString("HEX");
+    const RANDOM_TOKEN = crypto.randomBytes(15).toString("HEX");
     const token = jwt.sign({ userId: user[0]._id }, RANDOM_TOKEN, {
       expiresIn: "24h",
     });
-    res.cookie("jwt", token, { secure: false, httpOnly: true });
+    res.cookie("jwt", token, { secure: true, httpOnly: true });
     res.status(200).json({
       user: user[0].email,
       Information: "This token below was sent in a cookie named jwt",

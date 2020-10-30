@@ -21,7 +21,6 @@ const projectsController = require("./controller/projects")();
 const issuesController = require("./controller/issues")();
 const token = require("./user/token");
 
-require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const app = (module.exports = express());
 
@@ -32,25 +31,29 @@ app.use((req, res, next) => {
 });
 const { login } = require("./user/token");
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       AUTHENTICATION                                   \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
 const auth = require("./user/auth");
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-//\\     In Postman(or similar) Headers                                   \\\\\\\\\\\\\\\\\\\
-//\\ USER-->    define key: x-api-user     Value: your email              \\\\\\\\\\\\\\\\\\\
-//\\ KEY-->    define key: x-api-key     Value: your password             \\\\\\\\\\\\\\\\\\\
+//\\     In Postman(or similar)                                           \\\\\\\\\\\\\\\\\\\
+//\\     Request: {POST}"/login"                                          \\\\\\\\\\\\\\\\\\\
+//\\     Body:                                                            \\\\\\\\\\\\\\\\\\\
+//\\ USER-->   "email": "your email"                                      \\\\\\\\\\\\\\\\\\\
+//\\ KEY-->    "key": "your password"                                     \\\\\\\\\\\\\\\\\\\
 //\\                                                                      \\\\\\\\\\\\\\\\\\\
 //\\    For demonstration/test purpose:                                   \\\\\\\\\\\\\\\\\\\
-//\\    email:dalbert@cct.ie                                              \\\\\\\\\\\\\\\\\\\
-//\\    Password: 123456   (all users were registered with same password) \\\\\\\\\\\\\\\\\\\
+//\\  {  "email": "dalbert@cct.ie"                                        \\\\\\\\\\\\\\\\\\\
+//\\    "key": "123456"   }                                               \\\\\\\\\\\\\\\\\\\
+//\\                       (all users were registered with same password) \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-app.use(bodyParser.json());
-
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\                       LOGIN                                            \\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 app.post("/login", login);
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -61,7 +64,6 @@ app.post("/login", login);
 /////         USERS                                              ////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //------------> get all users
-
 app.get("/users", auth, usersController.getController);
 //------------> add an user
 app.post("/users", auth, usersController.postController);
