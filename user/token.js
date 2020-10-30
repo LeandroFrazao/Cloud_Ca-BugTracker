@@ -11,7 +11,6 @@ exports.login = async (req, res, next) => {
   try {
     // check if the email exist in the database.
     const user = await db.get("users", { email: email });
-    console.log(user.length);
     if (!user || user.length == 0) {
       error = "User not Found!";
       return res.status(401).json({ error: error });
@@ -32,7 +31,7 @@ exports.login = async (req, res, next) => {
       expiresIn: "24h",
     });
     // generate a cookie containing the token
-    res.cookie("jwt", token, { secure: false, httpOnly: true });
+    res.cookie("jwt", token, { secure: true, httpOnly: true });
     res.status(200).json({
       user: user[0].email,
       Information: "This token below was sent in a cookie named jwt",

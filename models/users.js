@@ -77,7 +77,7 @@ module.exports = () => {
         error = "Email (" + email + ") is invalid";
         return { error: error };
       }
-      console.log("aqui");
+
       if (key.length < 6) {
         //  minimum length required for key is 6 characters
         error = "Key length (" + key.length + ") must be greater than 5";
@@ -91,10 +91,8 @@ module.exports = () => {
         error = "Email (" + email + ") is already being Used.";
         return { error: error };
       }
-      console.log(key);
       //BONUS : Hash the password/key
       let hashKey = await userHashKey.hash(key); // call a function to hash the user key
-      console.log("aqui2");
       const results = await db.add(COLLECTION, {
         name: name,
         email: email.toLowerCase(),
