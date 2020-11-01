@@ -36,17 +36,19 @@ module.exports = () => {
     }
     try {
       const user = await db.get("users", { email: suppliedUser });
+      if (user.length == 0) {
+        return null;
+      }
       const hashedKey = user[0].key;
       const verifyKey = await compare(suppliedKey, hashedKey);
       console.log(verifyKey);
       if (!verifyKey) {
         console.log("2: Bad key");
         error = "Wrong Password";
-        return { error: error };
       }
       return user[0];
     } catch (error) {
-      return null;
+      return { error: error };
     }
   };
 
