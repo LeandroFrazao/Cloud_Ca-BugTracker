@@ -40,12 +40,14 @@ module.exports = () => {
         return null;
       }
       const hashedKey = user[0].key;
+      console.log(suppliedKey);
       const verifyKey = await compare(suppliedKey, hashedKey);
       console.log(verifyKey);
       if (!verifyKey) {
         console.log("2: Bad key");
         error = "Wrong Password";
       }
+      return null;
       return user[0];
     } catch (error) {
       return { error: error };
