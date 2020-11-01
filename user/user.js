@@ -46,8 +46,9 @@ module.exports = () => {
       if (!verifyKey) {
         console.log("2: Bad key");
         error = "Wrong Password";
+        return null;
       }
-      return null;
+
       return user[0];
     } catch (error) {
       return { error: error };
