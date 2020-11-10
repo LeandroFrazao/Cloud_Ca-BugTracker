@@ -41,10 +41,11 @@ module.exports = () => {
           return { error: error };
         }
       }
+
+      return { issuesList: issues };
     } catch (error) {
       return { error: error };
     }
-    return issues;
   };
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +76,7 @@ module.exports = () => {
         error = "Issues for slug (" + slug + ") NOT FOUND!";
         return { error: error };
       }
-      return issues;
+      return { result: issues };
     } catch (error) {
       return { error: error };
     }
@@ -117,7 +118,7 @@ module.exports = () => {
       }
       const newValue = { $set: { status: status } };
       const projects = await db.update(COLLECTION, { issueNumber }, newValue);
-      return projects;
+      return { result: projects };
     } catch (error) {
       return { error: error };
     }
@@ -186,7 +187,7 @@ module.exports = () => {
         project_id: project[0]._id,
         comments: [],
       });
-      return results.result;
+      return { result: results.result };
     } catch (error) {
       return { error: error };
     }
@@ -236,14 +237,14 @@ module.exports = () => {
           error = "Email (" + email + ") NOT FOUND!";
           return { error: error };
         }
-        return results;
+        return { result: results };
       } else {
         const results = await db.aggregate(COLLECTION, PIPELINE_ALL_COMMENTS);
         if (results.length == 0) {
           error = "There are no Comments Registered";
           return { error: error };
         }
-        return results;
+        return { result: results };
       }
     } catch (error) {
       return { error: error };
@@ -270,7 +271,7 @@ module.exports = () => {
 
       if (!comment_id) {
         if (issues[0].comments.length != 0) {
-          return issues[0].comments;
+          return { result: issues[0].comments };
         } else {
           error =
             "There are NO COMMENTS on IssuenNumber (" +
@@ -302,7 +303,7 @@ module.exports = () => {
 
         const comment = await db.aggregate(COLLECTION, PIPELINE_COMMENT_ID);
         if (comment[0].comments.length != 0) {
-          return comment;
+          return { result: comment };
         } else {
           error = "Issue with Comment ID (" + comment_id + ") NOT FOUND!";
           return { error: error };
@@ -379,7 +380,7 @@ module.exports = () => {
           $push: { comments: comments },
         }
       );
-      return results.result;
+      return { result: results.result };
     } catch (error) {
       return { error: error };
     }
