@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const db = require("../db")();
 const userHashKey = require("./hash")();
-const crypto = require("crypto");
+const crypto = require("crypto-js");
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       LOGIN                                            \\\\\\\\\\\\\\\\\\\

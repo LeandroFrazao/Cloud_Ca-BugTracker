@@ -19,7 +19,6 @@ const port = process.env.PORT || 3000;
 const usersController = require("./controller/users")();
 const projectsController = require("./controller/projects")();
 const issuesController = require("./controller/issues")();
-const token = require("./user/token");
 
 const cookieParser = require("cookie-parser");
 const app = (module.exports = express());
