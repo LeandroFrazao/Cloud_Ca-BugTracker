@@ -125,8 +125,12 @@ module.exports = () => {
   const postCommentController = async (req, res) => {
     const issueNumber = req.params.issueNumber;
     const text = req.body.text;
-    const email = req.body.email;
-    const { result, error } = await issues.addComment(issueNumber, email, text);
+    const author = req.body.email;
+    const { result, error } = await issues.addComment(
+      issueNumber,
+      author,
+      text
+    );
     if (error) {
       return res.status(500).json({ error });
     }

@@ -324,7 +324,7 @@ module.exports = () => {
       if (!email || !text) {
         // check if all fields are not null, undefined or empty.
         error =
-          "Fields email:(" +
+          "Fields author:(" +
           email +
           "), text:(" +
           text +
