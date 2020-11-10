@@ -5,22 +5,22 @@ module.exports = () => {
   ////Get all issues "{GET} /issues"///////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
   const getController = async (req, res) => {
-    const { issuesList, error } = await issues.get();
+    const { result, error } = await issues.get();
     if (error) {
       return res.status(500).json({ error });
     }
-    res.json({ issues: issuesList });
+    res.json({ issues: result });
   };
 
   ////////////////////////////////////////////////////////////////////////////////
   ////Get individual issues "{GET} /issues/{:issueNumber}" or {_id}//////////////
   //////////////////////////////////////////////////////////////////////////////
   const getByIdController = async (req, res) => {
-    const { issuesList, error } = await issues.get(req.params.id);
+    const { result, error } = await issues.get(req.params.id);
     if (error) {
       return res.status(500).json({ error });
     }
-    res.json({ issues: issuesList });
+    res.json({ issues: result });
   };
 
   ///////////////////////////////////////////////////////////////////////////////////////////////

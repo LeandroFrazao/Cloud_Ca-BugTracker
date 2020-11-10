@@ -42,7 +42,7 @@ module.exports = () => {
         }
       }
 
-      return { issuesList: issues };
+      return { result: issues };
     } catch (error) {
       return { error: error };
     }

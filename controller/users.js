@@ -6,13 +6,21 @@ module.exports = () => {
   /////////////////////////////////////////////////////////////////////////
 
   const getController = async (req, res) => {
-    res.json(await users.get());
+    const { result, error } = await users.get();
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    res.json({ users: result });
   };
   /////////////////////////////////////////////////////////////////////////
   /////Get individual users "{GET} /users/{EMAIL}" or { _id}//////////////
   ///////////////////////////////////////////////////////////////////////
   const getById = async (req, res) => {
-    res.json(await users.get(req.params.id));
+    const { result, error } = await users.get(req.params.id);
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    res.json({ users: result });
   };
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -23,8 +31,11 @@ module.exports = () => {
     const email = req.body.email;
     const userType = req.body.userType;
     const key = req.body.key;
-    const result = await users.add(name, email, userType, key);
-    res.json(result);
+    const { result, error } = await users.add(name, email, userType, key);
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    res.json({ users: result });
   };
 
   return {

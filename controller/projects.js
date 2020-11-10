@@ -6,14 +6,22 @@ module.exports = () => {
   ////////////////////////////////////////////////////////////////////////////////////
 
   const getController = async (req, res) => {
-    res.json(await projects.get());
+    const { result, error } = await projects.get();
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    res.json({ projects: result });
   };
 
   ////////////////////////////////////////////////////////////////////////////////////
   ///Get individual projects "{GET} /projects/{SLUG}" or {_id}///////////////////////
   //////////////////////////////////////////////////////////////////////////////////
   const getById = async (req, res) => {
-    res.json(await projects.get(req.params.id));
+    const { result, error } = await projects.get(req.params.id);
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    res.json({ projects: result });
   };
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -23,8 +31,11 @@ module.exports = () => {
     const slug = req.body.slug;
     const name = req.body.name;
     const description = req.body.description;
-    const result = await projects.add(slug, name, description);
-    res.json(result);
+    const { result, error } = await projects.add(slug, name, description);
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    res.json({ projects: result });
   };
 
   return {

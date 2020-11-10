@@ -19,7 +19,7 @@ module.exports = () => {
           error = "There are no Projects Registered";
           return { error: error };
         }
-        return projects;
+        return { result: projects };
       } else {
         const slug = id.toUpperCase();
         if (ObjectID.isValid(id)) {
@@ -36,7 +36,7 @@ module.exports = () => {
           error = "Project (" + id + ") Not Found!";
           return { error: error };
         }
-        return projects;
+        return { result: projects };
       }
     } catch (error) {
       return { error: error };
@@ -79,7 +79,7 @@ module.exports = () => {
         name: name,
         description: description,
       });
-      return results.result;
+      return { result: results.result };
     } catch (error) {
       return { error: error };
     }
