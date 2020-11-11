@@ -26,20 +26,20 @@ $ npm install
 Mongo Seetings
 1. Create an account in [Mongo-Atlas](https://www.mongodb.com/cloud/atlas)
 
-2. Follow the [instructions] (https://docs.atlas.mongodb.com/getting-started/)
+2. Follow the [instructions](https://docs.atlas.mongodb.com/getting-started/)
 
 3. It is optional to install [Robo3T](https://robomongo.org/)
 
-4. Follow the [instructions] (https://docs.atlas.mongodb.com/getting-started/) https://studio3t.com/knowledge-base/articles/connect-to-mongodb/)
+4. Follow the [instructions](https://studio3t.com/knowledge-base/articles/connect-to-mongodb/)
 
 5. It is necessary to set the enviroment variable in terminal, which contains information about your mongoDB, allowing to user the apllication and connect to your database locally.
 $env:MONGO_URI="mongodb+srv://admin:<password>@cluster0.vfgmc.mongodb.net/<dbname>?retryWrites=true&w=majority"
 
 7. Create an account in [Heroku](https://www.heroku.com/)
 
-8. Follow the [instructions] (https://devcenter.heroku.com/articles/getting-started-with-nodejs)
+8. Follow the [instructions](https://devcenter.heroku.com/articles/getting-started-with-nodejs)
 
-9. Connection heroku to your mongoDB, follow the [instructions] (https://devcenter.heroku.com/articles/mongolab#connecting-to-your-mongodb-instance)
+9. Connection heroku to your mongoDB, follow the [instructions](https://devcenter.heroku.com/articles/mongolab#connecting-to-your-mongodb-instance)
   
 
 ## Technologies used
@@ -53,7 +53,7 @@ $env:MONGO_URI="mongodb+srv://admin:<password>@cluster0.vfgmc.mongodb.net/<dbnam
 * Heroku
 
 ## Example usage
-The demonstration of all the routes and more details can be accessed in this [file] (https://github.com/LeandroFrazao/Cloud_Ca-BugTracker/blob/ca2/BugTrack_Routes_Details_112020.pdf)
+The demonstration of all the routes and more details can be accessed in this [file](https://github.com/LeandroFrazao/Cloud_Ca-BugTracker/blob/ca2/BugTrack_Routes_Details_112020.pdf)
 
 ## Changelog
 * 21th of October 2020 - Project for Cloud Based Web Applications is created.
