@@ -28,6 +28,7 @@ exports.login = async (req, res, next) => {
     }
     // create a random string to be included in the token.
     const RANDOM_TOKEN = crypto.randomBytes(15).toString("HEX");
+    console.log("aqui");
     //token is generate using user id and the random string. the token is set to be valid for 24 hours, while the user is using the API
     const token = jwt.sign({ userId: user[0]._id }, RANDOM_TOKEN, {
       expiresIn: "24h",
