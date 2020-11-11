@@ -1,4 +1,4 @@
-# CBWA-PROJECT-BUGTRACKER-CA2
+# # CBWA-PROJECT-BUGTRACKER-CA2
 > To develop a cloud web application using NodeJS. 
 
 ## Table of contents
@@ -53,7 +53,7 @@ $env:MONGO_URI="mongodb+srv://admin:<password>@cluster0.vfgmc.mongodb.net/<dbnam
 * Heroku
 
 ## Example usage
-The demonstration of all the routes and more details can be accessed in this [file] (.BugTrack_Routes_Details_112020.pdf)
+The demonstration of all the routes and more details can be accessed in this [file] (https://github.com/LeandroFrazao/Cloud_Ca-BugTracker/blob/ca2/BugTrack_Routes_Details_112020.pdf)
 
 ## Changelog
 * 21th of October 2020 - Project for Cloud Based Web Applications is created.
@@ -68,9 +68,6 @@ The demonstration of all the routes and more details can be accessed in this [fi
 * Mobile User interface (Jan 2020)
 
 ## Author info
-Cloud Developer: Leandro Frazão
-College name: CCT
-Course title: Science in Computing
-
-
-
+* Cloud Developer: Leandro Frazão
+* College name: CCT
+* Course title: Science in Computing
