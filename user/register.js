@@ -34,7 +34,7 @@ exports.register = async (req, res, next) => {
     text:
       "Hello,\n\n" +
       "Please verify your account by clicking the link: \nhttp://" +
-      req.headers.host +
+      "req.headers.host" +
       "/confirmation/" +
       token.token +
       ".\n",
@@ -43,11 +43,21 @@ exports.register = async (req, res, next) => {
   const userEmail = process.env.APIEMAIL;
   const passEmail = process.env.APIPASS;
   var transporter = nodemailer.createTransport({
-    service: "smtp.mail.yahoo.com",
+    service: "yahoo",
+    host: "smtp.mail.yahoo.com",
+    port: 587,
+    security: true,
     auth: {
       user: userEmail,
       pass: passEmail,
     },
+  });
+  transporter.verify((error, success) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Server is ready for messages");
+    }
   });
   await transporter.sendMail(mailOptions, function (err) {
     if (err) {
