@@ -11,6 +11,7 @@
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 const express = require("express");
+
 const bodyParser = require("body-parser");
 
 const hostname = "0.0.0.0";
@@ -21,7 +22,7 @@ const projectsController = require("./controller/projects")();
 const issuesController = require("./controller/issues")();
 
 const cookieParser = require("cookie-parser");
-const app = (module.exports = express());
+const app = express();
 
 //login
 app.use((req, res, next) => {
@@ -29,6 +30,15 @@ app.use((req, res, next) => {
   next();
 });
 const { login } = require("./user/token");
+const { accessLevel } = require("./user/token");
+const { register } = require("./user/register");
+const {
+  validateLogin,
+  validateUser,
+  validateProject,
+  validateIssues,
+  validateComments,
+} = require("./user/validator");
 app.use(cookieParser());
 app.use(bodyParser.json());
 
@@ -53,7 +63,11 @@ const auth = require("./user/auth");
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       LOGIN                                            \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-app.post("/login", login);
+app.post("/login", validateLogin, login);
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\                       Register NEW USER                                \\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+app.post("/register", validateUser, register);
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       ROUTES                                           \\\\\\\\\\\\\\\\\\\
@@ -63,19 +77,25 @@ app.post("/login", login);
 /////         USERS                                              ////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //------------> get all users
-app.get("/users", auth, usersController.getController);
+app.get("/users", auth, accessLevel, usersController.getController);
 //------------> add an user
-app.post("/users", auth, usersController.postController);
+app.post("/users", auth, validateUser, usersController.postController);
 //------------> get a user by email or user _id
-app.get("/users/:id", auth, usersController.getById);
+app.get("/users/:id", auth, accessLevel, usersController.getById);
 
 //////////////////////////////////////////////////////////////////////////////////
 /////         PROJECTS                                           ////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //------------> get all projects
 app.get("/projects", auth, projectsController.getController);
-//add an user
-app.post("/projects", auth, projectsController.postController);
+//add a project
+app.post(
+  "/projects",
+  auth,
+  validateProject,
+  accessLevel,
+  projectsController.postController
+);
 //------------> get a user  by slug or project _id
 app.get("/projects/:id", auth, projectsController.getById);
 
@@ -98,11 +118,17 @@ app.get(
 app.put(
   "/projects/:slug/issues/:issue_id/:status",
   auth,
+  accessLevel,
   issuesController.putUpdateStatusController
 );
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //Add new issues to a project individually
-app.post("/projects/:slug/issues", auth, issuesController.postController);
+app.post(
+  "/projects/:slug/issues",
+  auth,
+  validateIssues,
+  issuesController.postController
+);
 
 //////////////////////////////////////////////////////////////////////////////////
 /////         COMMENTS                                           ////////////////
@@ -131,6 +157,7 @@ app.get(
 app.post(
   "/issues/:issueNumber/comments/",
   auth,
+  validateComments,
   issuesController.postCommentController
 );
 

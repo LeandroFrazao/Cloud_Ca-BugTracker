@@ -1,6 +1,6 @@
 const db = require("../db")();
 const COLLECTION = "issues";
-
+const auth = require("../user/auth");
 const ObjectID = require("mongodb").ObjectID;
 
 module.exports = () => {
@@ -131,31 +131,7 @@ module.exports = () => {
     console.log(" --- issuesModel.add --- ");
 
     try {
-      if (!title || !description || !status) {
-        // check if all fields are not null, undefined or empty.
-        error =
-          "Fields title:(" +
-          title +
-          "), description:(" +
-          description +
-          "), status:(" +
-          status +
-          "), MUST NOT BE EMPTY or UNDEFINED!";
-        return { error: error };
-      }
-      if (
-        // check iff the status is valid according to the parameters bellow.
-        status != "open" &&
-        status != "wip" &&
-        status != "blocked" &&
-        status != "closed"
-      ) {
-        error =
-          "Invalid Status (" +
-          status +
-          "). Must Be: open, wip, blocked or closed";
-        return { error: error };
-      }
+      const authorEmail = auth.currentUser.userEmail; //whoever is logged is going to record automatically the email of the current user in the comments.
       slug = slug.toUpperCase();
       let project = null;
       project = await db.get("projects", { slug: slug });
@@ -179,12 +155,17 @@ module.exports = () => {
       } else {
         id_slug = count_projects[0].project_id + 1;
       }
+      const date = new Date();
+      const date_issue =
+        date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
       const results = await db.add(COLLECTION, {
         issueNumber: slug.toUpperCase() + "-" + id_slug,
         title: title,
         description: description,
         status: status,
         project_id: project[0]._id,
+        author: authorEmail,
+        date_issue: date_issue,
         comments: [],
       });
       return { result: results.result };
@@ -317,23 +298,12 @@ module.exports = () => {
   ///////////////////////////////////////////////////////////////////////////////////
   /////Add new comments to an issue "{POST} /issues/BOOK-1/comments"////////////////
   /////////////////////////////////////////////////////////////////////////////////
-  const addComment = async (issueNumber, email, text) => {
+  const addComment = async (issueNumber, text) => {
     console.log(" --- issuesModel.addComment --- ");
     let author = null;
     try {
-      if (!email || !text) {
-        // check if all fields are not null, undefined or empty.
-        error =
-          "Fields author:(" +
-          email +
-          "), text:(" +
-          text +
-          "), MUST NOT BE EMPTY or UNDEFINED!";
-        return { error: error };
-      }
-      const authoremail = await db.get("users", { email: email });
-      author = authoremail;
-
+      const userEmail = auth.currentUser.userEmail; //whoever is logged is going to record automatically the email of the current user in the comments.
+      author = userEmail;
       if (author.length == 0) {
         error = "User (" + id_or_email + ") NOT FOUND!";
         return { error: error };
@@ -368,10 +338,24 @@ module.exports = () => {
         error = "IssueNumber (" + issueNumber + ") NOT FOUND!";
         return { error: error };
       }
+      const date = new Date();
+      const date_comment =
+        date.getDate() +
+        "-" +
+        (date.getMonth() + 1) +
+        "-" +
+        date.getFullYear() +
+        " " +
+        date.getHours() +
+        ":" +
+        date.getMinutes() +
+        ":" +
+        date.getSeconds();
       const comments = {
         id: count,
         text: text,
         author: author[0].email,
+        date_comment: date_comment,
       };
       const results = await db.update(
         COLLECTION,

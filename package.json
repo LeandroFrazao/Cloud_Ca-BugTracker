@@ -24,9 +24,11 @@
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-validator": "^6.6.1",
     "heroku": "^7.46.2",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.2",
+    "nodemailer": "^6.4.15",
     "nodemon": "^2.0.6"
   }
 }

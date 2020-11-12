@@ -49,25 +49,6 @@ module.exports = () => {
   const add = async (slug, name, description) => {
     console.log(" --- projectsModel.add --- ");
     try {
-      if (!slug || !name || !description) {
-        // check if all fields are not null, undefined or empty.
-        error =
-          "Fields slug:(" +
-          slug +
-          "), name:(" +
-          name +
-          "), description:(" +
-          description +
-          "), MUST NOT BE EMPTY or UNDEFINED!";
-        return { error: error };
-      }
-
-      if (/[^a-z]/i.test(slug)) {
-        //check if slug contains only letters, if not, returns a error message
-        console.log(/[^a-z]/i.test(slug));
-        error = "Field slug:(" + slug + ") MUST BE ONLY LETTERS!";
-        return { error: error };
-      }
       slug = slug.toUpperCase();
       const project = await db.get(COLLECTION, { slug: slug });
       if (project.length > 0) {

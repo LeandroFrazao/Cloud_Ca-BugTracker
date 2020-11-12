@@ -51,38 +51,6 @@ module.exports = () => {
   const add = async (name, email, userType, key) => {
     console.log(" --- usersModel.add --- ");
     try {
-      if (!name || !email || !userType || !key) {
-        // check if all fields are not null, undefined or empty.
-        error =
-          "Fields name:(" +
-          name +
-          "), email:(" +
-          email +
-          "), userType:(" +
-          userType +
-          ") or key, MUST NOT BE EMPTY or UNDEFINED";
-        return { error: error };
-      }
-      if (
-        // check if the userType is valid according to the parameters bellow.
-        userType != "user" &&
-        userType != "admin"
-      ) {
-        error = "Invalid User Type (" + userType + "). MUST BE: user or admin.";
-        return { error: error };
-      }
-
-      if (email.length < 5) {
-        // a@a.a minimum length required for email is 5 characters
-        error = "Email (" + email + ") is invalid";
-        return { error: error };
-      }
-
-      if (key.length < 6) {
-        //  minimum length required for key is 6 characters
-        error = "Key length (" + key.length + ") must be greater than 5";
-        return { error: error };
-      }
       //check if email was already registered
       email = email.toLowerCase();
       const users = await db.get(COLLECTION, { email: email }); //use objectid to get id from mongodb
