@@ -48,7 +48,6 @@ module.exports = () => {
         error = "Wrong Password";
         return null;
       }
-
       return user[0];
     } catch (error) {
       return { error: error };
