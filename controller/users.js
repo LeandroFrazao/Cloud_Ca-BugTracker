@@ -35,6 +35,7 @@ module.exports = () => {
     if (error) {
       return res.status(500).json({ error });
     }
+
     res.json({ users: result });
   };
 

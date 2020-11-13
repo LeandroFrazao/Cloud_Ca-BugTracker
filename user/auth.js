@@ -11,7 +11,11 @@ module.exports = (req, res, next) => {
     //console.log(req.cookies.jwt);
     //check if cookie exist, otherwise return an error
     if (!accessToken) {
-      return res.status(403).send({ error: "Invalid" });
+      return res
+        .status(403)
+        .send({
+          error: "Need to Login, go to:  '/login' and user your credencials ",
+        });
     }
     //console.log(token.RANDOM_TOKEN);
     // import the random string from token.js

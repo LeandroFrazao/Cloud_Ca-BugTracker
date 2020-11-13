@@ -67,7 +67,8 @@ module.exports = () => {
         userType: userType.toLowerCase(),
         key: hashKey,
       });
-      return { result: results.result };
+
+      return { result: results.ops };
     } catch (error) {
       return { error: error };
     }
