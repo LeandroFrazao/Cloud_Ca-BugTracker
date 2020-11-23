@@ -32,6 +32,8 @@ app.use((req, res, next) => {
 const { login } = require("./user/token");
 const { accessLevel } = require("./user/token");
 const { register } = require("./user/register");
+
+//variables are loaded with validator to be used on the routes.
 const {
   validateLogin,
   validateUser,

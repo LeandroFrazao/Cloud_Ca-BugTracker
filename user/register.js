@@ -8,6 +8,9 @@ const nodemailer = require("nodemailer");
 //\\                       Register NEW USER                                \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 exports.register = async (req, res, next) => {
+  console.log(
+    " --- register.register -------------------------------------------------- "
+  );
   //  try {
 
   var newUser = {
@@ -70,7 +73,7 @@ exports.register = async (req, res, next) => {
       randomToken +
       ".\n",
   };
-  console.log("aqui " + token.token);
+  console.log(" >>>  Token: " + token);
   const userEmail = process.env.APIEMAIL;
   const passEmail = process.env.APIPASS;
   var transporter = nodemailer.createTransport({
@@ -90,15 +93,17 @@ exports.register = async (req, res, next) => {
       console.log("Server is ready for messages");
     }
   });
-  // await transporter.sendMail(mailOptions, function (err) {
-  //   if (err) {
-  //     return res.status(501).send({ msg: err.message });
-  //   }
-  //   res
-  //     .status(200)
-  //     .send("A verification email has been sent to " + req.body.email + ".");
-  // });
-  res.status(200).send();
+  transporter.sendMail(mailOptions, function (err) {
+    if (err) {
+      console.log("error to send email");
+      return res.status(501).send({ msg: err.message });
+    }
+    console.log("To send email");
+    res
+      .status(200)
+      .send("A verification email has been sent to " + req.body.email + ".");
+  });
+  //res.status(200).send();
 
   // res.send();
   //   } catch (error) {
@@ -127,28 +132,28 @@ exports.confirmation = async (req, res, next) => {
       });
 
     // If we found a token, find a matching user
-    User.findOne({ _id: token._userId, email: req.body.email }, function (
-      err,
-      user
-    ) {
-      if (!user)
-        return res
-          .status(400)
-          .send({ msg: "We were unable to find a user for this token." });
-      if (user.isVerified)
-        return res.status(400).send({
-          type: "already-verified",
-          msg: "This user has already been verified.",
-        });
+    User.findOne(
+      { _id: token._userId, email: req.body.email },
+      function (err, user) {
+        if (!user)
+          return res
+            .status(400)
+            .send({ msg: "We were unable to find a user for this token." });
+        if (user.isVerified)
+          return res.status(400).send({
+            type: "already-verified",
+            msg: "This user has already been verified.",
+          });
 
-      // Verify and save the user
-      user.isVerified = true;
-      user.save(function (err) {
-        if (err) {
-          return res.status(500).send({ msg: err.message });
-        }
-        res.status(200).send("The account has been verified. Please log in.");
-      });
-    });
+        // Verify and save the user
+        user.isVerified = true;
+        user.save(function (err) {
+          if (err) {
+            return res.status(500).send({ msg: err.message });
+          }
+          res.status(200).send("The account has been verified. Please log in.");
+        });
+      }
+    );
   });
 };
