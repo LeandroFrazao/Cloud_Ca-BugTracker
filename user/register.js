@@ -20,47 +20,52 @@ exports.register = async (req, res, next) => {
     key: req.body.key,
   };
   console.log(newUser);
-  const user = await users.get(newUser.email);
-  console.log(user);
-  // const { result, error } = await users.add(
-  //   newUser.name,
-  //   newUser.email,
-  //   newUser.userType,
-  //   newUser.key
-  // );
-  var result = [];
-  result[0] = ["11"];
-  console.log({ users: result[0] });
-  // if (error) {
-  //   console.log("Email already registered.");
-  //   return res.status(500).json({ error: error });
-  // }
-  // //const { result, error } = await users.get(req.body.email);
-  // if (error) {
-  //   console.log({ user });
-  // }
+  let user = await users.get(newUser.email);
+  console.log("From users: ", user.result);
+  //if user is already resgistered, return an error
+  if (user.result) {
+    console.log("Email already registered.");
+    return res.status(500).json({ error: "Email already registered." });
+  }
 
-  // var token = {
-  //   _userId: result[0]._id,
-  //   token: crypto.randomBytes(16).toString("hex"),
-  // };
-  const randomToken = crypto.randomBytes(16).toString("hex");
-  console.log(randomToken);
+  let hashKey = await userHashKey.hash(newUser.key); // call a function to hash the user key
+
+  // replace a document if it was found, or create a new one.
+  user = await db.replace(
+    "tempUsers",
+    { email: newUser.email },
+    {
+      name: newUser.name,
+      email: newUser.email,
+      userType: newUser.userType,
+      key: hashKey,
+    }
+  );
+  console.log("From tempUsers: ", user);
+  console.log(hashKey);
+
+  const randomToken = crypto.randomBytes(20).toString("hex");
+  console.log("RANDOMTOKEN: ", randomToken);
   const token = jwt.sign(
     {
-      userId: result[0]._id,
+      user: req.body.email,
     },
     randomToken,
     {
-      expiresIn: "300", //5 minutes
+      expiresIn: "300s", //5 minutes
     }
   );
   res.cookie("vrf", token, { secure: false, httpOnly: true });
-  res.status(200).json({
-    user: result[0],
-    Information: "This token wil expire in 5min",
+
+  //message for the user
+  const msgToUser = {
+    user: "A verification email has been sent to " + req.body.email,
+    Information:
+      "Token wil expire in 5 minutes. Token was sent in a cookie named vrf",
     token: token,
-  });
+  };
+
+  // create a message that is going to be sent by email
   var mailOptions = {
     from: "no-reply@bugtrackapi.com",
     to: req.body.email,
@@ -69,13 +74,19 @@ exports.register = async (req, res, next) => {
       "Hello,\n\n" +
       "Please verify your account by clicking the link: \nhttp://" +
       req.headers.host +
-      "/confirmation/" +
+      "/verify/" +
       randomToken +
       ".\n",
   };
   console.log(" >>>  Token: " + token);
+
+  const decodedToken = jwt.verify(token, randomToken);
+  console.log("DecodeToken: ", decodedToken.user);
+
+  //load enviroment variables for email server
   const userEmail = process.env.APIEMAIL;
   const passEmail = process.env.APIPASS;
+
   var transporter = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.mail.gmail.com",
@@ -93,67 +104,87 @@ exports.register = async (req, res, next) => {
       console.log("Server is ready for messages");
     }
   });
+
   transporter.sendMail(mailOptions, function (err) {
     if (err) {
       console.log("error to send email");
       return res.status(501).send({ msg: err.message });
     }
-    console.log("To send email");
-    res
-      .status(200)
-      .send("A verification email has been sent to " + req.body.email + ".");
+    console.log("To send email to: ", req.body.email);
+    res.status(200).send({
+      user: msgToUser.user,
+      Information: msgToUser.Information,
+      Token: msgToUser.token,
+    });
+    // res
+    //   .status(200)
+    //   .send(
+    //     { msgToUser } +
+    //       "A verification email has been sent to " +
+    //       req.body.email +
+    //       "."
+    //   );
   });
-  //res.status(200).send();
-
-  // res.send();
+  //res.status(300).send("A verification email has been sent to ");
+  // res.status(200).send({
+  //   user: msgToUser.user,
+  //   Information: msgToUser.Information,
+  //   Token: msgToUser.token,
+  // });
+  //res.send();
   //   } catch (error) {
   //     res.status(500).json({ error });
   //   }
 };
 
 exports.confirmation = async (req, res, next) => {
-  var newUser = {
-    name: req.body.name,
-    email: req.body.email,
-    userType: req.body.userType,
-    key: req.body.key,
-  };
-  // Check for validation errors
-  var errors = req.validationErrors();
-  if (errors) return res.status(400).send(errors);
+  const randomToken = req.params.randomtoken; // randomToken that was sent by email
+  let accessToken = req.cookies.vrf; //get the token from the cookie vrf
+  console.log("RandomToken: ", randomToken);
+  try {
+    console.log("cookie: ", accessToken);
 
-  // Find a matching token
-  Token.findOne({ token: req.body.token }, function (err, token) {
-    if (!token)
-      return res.status(400).send({
-        type: "not-verified",
-        msg:
-          "We were unable to find a valid token. Your token my have expired.",
+    //check if cookie exist, otherwise return an error
+    if (!accessToken) {
+      return res.status(403).send({
+        error: "No cookie found. Need to Register, go to:  '/register' ",
       });
+    }
+    // verify toekn is valid
+    const decodedToken = jwt.verify(accessToken, randomToken);
+    //console.log("DecodeToken: ", decodedToken.user);
 
-    // If we found a token, find a matching user
-    User.findOne(
-      { _id: token._userId, email: req.body.email },
-      function (err, user) {
-        if (!user)
-          return res
-            .status(400)
-            .send({ msg: "We were unable to find a user for this token." });
-        if (user.isVerified)
-          return res.status(400).send({
-            type: "already-verified",
-            msg: "This user has already been verified.",
-          });
+    //check if user is already verified
+    let user = await db.get("users", { email: decodedToken.user });
+    if (user[0]) {
+      return res
+        .status(400)
+        .send({ msg: "The account has been verified. Please log in." });
+    }
 
-        // Verify and save the user
-        user.isVerified = true;
-        user.save(function (err) {
-          if (err) {
-            return res.status(500).send({ msg: err.message });
-          }
-          res.status(200).send("The account has been verified. Please log in.");
-        });
-      }
-    );
-  });
+    //check whether email exists in the tempUsers collection in mongoDB
+    user = await db.get("tempUsers", { email: decodedToken.user });
+    if (!user[0]) {
+      return res.status(400).send({ msg: "User Not Found for this token." });
+    }
+
+    //console.log("user from Token: ", user[0]);
+    //  after token is verified, the user account is copied from tempUsers to users collections
+    const results = await db.add("users", {
+      name: user[0].name,
+      email: user[0].email,
+      userType: user[0].userType,
+      key: user[0].key,
+    });
+    //then, after user document is added in users collection, data from tempUsers is deleted.
+    await db.deleteOne("tempUsers", { _id: user[0]._id });
+    console.log("user from Add: ", results.ops);
+    res
+      .status(200)
+      .send({ msg: "The account has been verified. Please log in." });
+  } catch (e) {
+    return res.status(400).send({
+      msg: "Your token expired.",
+    });
+  }
 };

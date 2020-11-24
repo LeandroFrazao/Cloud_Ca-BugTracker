@@ -30,8 +30,8 @@ app.use((req, res, next) => {
   next();
 });
 const { login } = require("./user/token");
-const { accessLevel } = require("./user/token");
-const { register } = require("./user/register");
+//const { accessLevel } = require("./user/auth");
+const { register, confirmation } = require("./user/register");
 
 //variables are loaded with validator to be used on the routes.
 const {
@@ -47,7 +47,7 @@ app.use(bodyParser.json());
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       AUTHENTICATION                                   \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-const auth = require("./user/auth");
+const { auth, accessLevel } = require("./user/auth");
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\     In Postman(or similar)                                           \\\\\\\\\\\\\\\\\\\
@@ -70,7 +70,7 @@ app.post("/login", validateLogin, login);
 //\\                       Register NEW USER                                \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 app.post("/register", validateUser, register);
-
+app.get("/verify/:randomtoken", confirmation);
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       ROUTES                                           \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -81,7 +81,13 @@ app.post("/register", validateUser, register);
 //------------> get all users
 app.get("/users", auth, accessLevel, usersController.getController);
 //------------> add an user
-app.post("/users", auth, validateUser, usersController.postController);
+app.post(
+  "/users",
+  auth,
+  accessLevel,
+  validateUser,
+  usersController.postController
+);
 //------------> get a user by email or user _id
 app.get("/users/:id", auth, accessLevel, usersController.getById);
 

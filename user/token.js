@@ -2,13 +2,13 @@ const jwt = require("jsonwebtoken");
 const db = require("../db")();
 const userHashKey = require("./hash")();
 const crypto = require("crypto");
-const auth = require("../user/auth");
-const users = require("../models/users")();
+//const auth = require("../user/auth");
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       LOGIN                                            \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 exports.login = async (req, res, next) => {
+  console.log(" ---token.login --- ");
   try {
     let email = req.body.email;
     email = email.toLowerCase();
@@ -16,7 +16,7 @@ exports.login = async (req, res, next) => {
     // check if the email exist in the database.
     const user = await db.get("users", { email: email });
     if (!user || user.length == 0) {
-      error = "User not Found!";
+      error = "User not Found! Create an account. Go to: '/register";
       return res.status(401).json({ error: error });
     }
     const key = req.body.key;
@@ -46,7 +46,7 @@ exports.login = async (req, res, next) => {
     res.cookie("jwt", token, { secure: false, httpOnly: true }); // IMPORTANTE CHANGE SECURE TO FALSE IF RUN LOCALLY
     res.status(200).json({
       user: user[0].email,
-      Information: "This token below was sent in a cookie named jwt",
+      Information: "Token was sent in a cookie named jwt",
       token: token,
     });
     // export the random the string to be used for authentication (auth.js).
@@ -57,32 +57,5 @@ exports.login = async (req, res, next) => {
     res.send();
   } catch (error) {
     res.status(500).json({ error: error });
-  }
-};
-
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-//\\                      Level Access Security                             \\\\\\\\\\\\\\\\\\\
-//\\                      Only Admin has access to:                         \\\\\\\\\\\\\\\\\\\
-//\\                      Get all users; Get users by ID;                   \\\\\\\\\\\\\\\\\\\
-//\\                      Add Project;                                      \\\\\\\\\\\\\\\\\\\
-//\\                      Update status of an Issue                         \\\\\\\\\\\\\\\\\\\
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-exports.accessLevel = async (req, res, next) => {
-  console.log(auth.currentUser.userId);
-  try {
-    if ((await auth.currentUser.userType) != "admin") {
-      // check if user is admin, if not, reject access to the route
-      //and print informations of the current user on the screen
-      const { result, error } = await users.get(auth.currentUser.userId);
-      if (error) {
-        res.status(500).json({ error });
-      }
-      const results = { user: result, Security: "Restrict Access" };
-      console.log("Restrict Access");
-      return res.status(200).json(results);
-    }
-    next();
-  } catch (error) {
-    return res.status(500).json({ error: error });
   }
 };

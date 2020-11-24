@@ -99,7 +99,7 @@ module.exports = () => {
     });
   };
   ///////////////////////////////////////////////////////////////////////////////////
-  /////         UPDATE:    collection.updateOne)                    ////////////////
+  /////         UPDATE:    collection.updateOne()                   ////////////////
   /////////////////////////////////////////////////////////////////////////////////
   const update = (collectionName, query = {}, newValues) => {
     return new Promise((resolve, reject) => {
@@ -122,11 +122,64 @@ module.exports = () => {
     });
   };
 
+  ///////////////////////////////////////////////////////////////////////////////////
+  /////         REPLACE:    collection.replaceOne()                 ////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+
+  const replace = (collectionName, query = {}, newDoc) => {
+    return new Promise((resolve, reject) => {
+      MongoClient.connect(uri, MONGO_OPTIONS, (err, client) => {
+        if (err) {
+          console.log(err);
+          return reject("=== replace::MongoClient.connect");
+        }
+        const db = client.db(DB_NAME);
+        const collection = db.collection(collectionName);
+        collection.replaceOne(query, newDoc, { upsert: true }, (err, docs) => {
+          //upsert:true allows to add document if any was found to be replaced
+          if (err) {
+            console.log(err);
+            return reject("=== replace::collection.replaceOne");
+          }
+          resolve(docs.ops);
+          client.close();
+        });
+      });
+    });
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////
+  /////         DELETE:    collection.deleteOne()                 ////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+
+  const deleteOne = (collectionName, query = {}) => {
+    return new Promise((resolve, reject) => {
+      MongoClient.connect(uri, MONGO_OPTIONS, (err, client) => {
+        if (err) {
+          console.log(err);
+          return reject("=== deleteOne::MongoClient.connect");
+        }
+        const db = client.db(DB_NAME);
+        const collection = db.collection(collectionName);
+        collection.deleteOne(query, (err, docs) => {
+          if (err) {
+            console.log(err);
+            return reject("=== deleteOne::collection.deleteeOne");
+          }
+          resolve(docs);
+          client.close();
+        });
+      });
+    });
+  };
+
   return {
     get,
     add,
     count,
     aggregate,
     update,
+    replace,
+    deleteOne,
   };
 };

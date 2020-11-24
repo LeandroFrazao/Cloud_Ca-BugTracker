@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const token = require("./token");
+const users = require("../models/users")();
 
-module.exports = (req, res, next) => {
+exports.auth = (req, res, next) => {
   //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   //\\                 Verify Token from cookie                               \\\\\\\\\\\\\\\\\\\
   //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -11,11 +12,9 @@ module.exports = (req, res, next) => {
     //console.log(req.cookies.jwt);
     //check if cookie exist, otherwise return an error
     if (!accessToken) {
-      return res
-        .status(403)
-        .send({
-          error: "Need to Login, go to:  '/login' and user your credencials ",
-        });
+      return res.status(403).send({
+        error: "Need to Login, go to:  '/login' and user your credencials ",
+      });
     }
     //console.log(token.RANDOM_TOKEN);
     // import the random string from token.js
@@ -32,5 +31,34 @@ module.exports = (req, res, next) => {
   } catch (error) {
     error = "Access Denied";
     return res.status(401).json({ error: error });
+  }
+};
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\                      Level Access Security                             \\\\\\\\\\\\\\\\\\\
+//\\                      Only Admin has access to:                         \\\\\\\\\\\\\\\\\\\
+//\\                      Get all users; Get users by ID; Add new user      \\\\\\\\\\\\\\\\\\\
+//\\                      Add Project;                                      \\\\\\\\\\\\\\\\\\\
+//\\                      Update status of an Issue                         \\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+exports.accessLevel = async (req, res, next) => {
+  console.log(" ---auth.accessLevel --- ");
+  console.log("access level", this.currentUser);
+  try {
+    console.log(this.currentUser.userId);
+    if ((await this.currentUser.userType) != "admin") {
+      // check if user is admin, if not, reject access to the route
+      //and print informations of the current user on the screen
+      const { result, error } = await users.get(this.currentUser.userId);
+      if (error) {
+        res.status(500).json({ error });
+      }
+      const results = { user: result, Security: "Restrict Access" };
+      console.log("Restrict Access");
+      return res.status(200).json(results);
+    }
+    next();
+  } catch (error) {
+    return res.status(500).json({ error: error });
   }
 };
