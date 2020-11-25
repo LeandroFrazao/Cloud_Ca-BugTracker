@@ -332,12 +332,10 @@ module.exports = () => {
 
       issueNumber = issueNumber.toUpperCase();
       const issue = await db.get(COLLECTION, { issueNumber: issueNumber });
-      console.log(issue, issueNumber);
       const dueDate = issue[0].dueDate;
       const date = new Date();
       let todayDate =
         date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDay();
-      console.log(todayDate, dueDate, date.getDate());
 
       if (todayDate > dueDate) {
         error = "This issue is expired! The due date was on " + dueDate;
