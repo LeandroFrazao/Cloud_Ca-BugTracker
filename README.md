@@ -67,7 +67,8 @@ The demonstration of all the routes and more details can be accessed in this [fi
 * 23rd of November 2020 - Home and Login page using Handlebars.
 * 25th of November 2020 - Due Date for Issues implemented.
 * 25th of November 2020 - Register and confirmation fixed.
-* 25th of November 2020 - Handlebar removed due to the short time available for implementation in the entire project.
+* 25th of November 2020 - A branch (web) was created to contain the project using handlebars and web pages.
+* 25th of November 2020 - Handlebar removed from "ca2" branch due to the short time available for implementation in the entire project.
 
 
 ## Roadmap
