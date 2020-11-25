@@ -63,9 +63,16 @@ The demonstration of all the routes and more details can be accessed in this [fi
 * 26th of october 2020 - Error checking is implemented.
 * 28nd of October 2020 - Authenthication is implemented.
 * 10th of November 2020 - Error checking is improved.
+* 21st of November 2020 - Register new User with confirmation by Email.
+* 23rd of November 2020 - Home and Login page using Handlebars.
+* 25th of November 2020 - Due Date for Issues implemented.
+* 25th of November 2020 - Register and confirmation fixed.
+* 25th of November 2020 - Handlebar removed due to the short time available for implementation in the entire project.
+
 
 ## Roadmap
-* Mobile User interface (Jan 2020)
+* Monolit using Handlebars (Dec 2020)
+* Mobile User interface (Jan 2021)
 
 ## Author info
 * Cloud Developer: Leandro Frazão
