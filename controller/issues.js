@@ -61,11 +61,13 @@ module.exports = () => {
     const title = req.body.title;
     const description = req.body.description;
     const status = req.body.status;
+    const dueDate = req.body.dueDate;
     const { result, error } = await issues.add(
       slug,
       title,
       description,
-      status
+      status,
+      dueDate
     );
     if (error) {
       return res.status(500).json({ error });

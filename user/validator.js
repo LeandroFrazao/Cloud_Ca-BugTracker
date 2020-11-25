@@ -1,9 +1,10 @@
 const { check, validationResult } = require("express-validator");
 
 const checkValidation = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty())
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
+  }
   next();
 };
 exports.validateLogin = [
@@ -75,6 +76,13 @@ exports.validateIssues = [
     .bail()
     .isIn(["open", "wip", "blocked", "closed"])
     .withMessage("Status must Be: open, wip, blocked or closed"),
+  check("dueDate")
+    .notEmpty()
+    .withMessage("Due Date cannot be blank")
+    .bail()
+    .toDate()
+    .notEmpty()
+    .withMessage("dueDate must be a valid date YYYY-MM-DD"),
   checkValidation,
 ];
 exports.validateComments = [

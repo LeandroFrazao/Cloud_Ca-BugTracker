@@ -127,7 +127,7 @@ module.exports = () => {
   //////////////////////////////////////////////////////////////////////////////////////////
   /////Add new issues to a project individually "{POST} /projects/BOOKS/issues"////////////
   ////////////////////////////////////////////////////////////////////////////////////////
-  const add = async (slug, title, description, status) => {
+  const add = async (slug, title, description, status, dueDate) => {
     console.log(" --- issuesModel.add --- ");
 
     try {
@@ -166,6 +166,7 @@ module.exports = () => {
         project_id: project[0]._id,
         author: authorEmail,
         date_issue: date_issue,
+        dueDate: dueDate,
         comments: [],
       });
       return { result: results.result };
@@ -302,6 +303,7 @@ module.exports = () => {
     console.log(" --- issuesModel.addComment --- ");
     let author = null;
     try {
+      console.log(auth.currentUser.userEmail);
       const userEmail = auth.currentUser.userEmail; //whoever is logged is going to record automatically the email of the current user in the comments.
       author = userEmail;
       if (author.length == 0) {
@@ -326,6 +328,21 @@ module.exports = () => {
           },
         },
       ];
+      // checking due date
+
+      issueNumber = issueNumber.toUpperCase();
+      const issue = await db.get(COLLECTION, { issueNumber: issueNumber });
+      console.log(issue, issueNumber);
+      const dueDate = issue[0].dueDate;
+      const date = new Date();
+      let todayDate =
+        date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDay();
+      console.log(todayDate, dueDate, date.getDate());
+
+      if (todayDate > dueDate) {
+        error = "This issue is expired! The due date was on " + dueDate;
+        return { error: error };
+      }
 
       const count_comments = await db.aggregate(
         COLLECTION,
@@ -338,7 +355,7 @@ module.exports = () => {
         error = "IssueNumber (" + issueNumber + ") NOT FOUND!";
         return { error: error };
       }
-      const date = new Date();
+
       const date_comment =
         date.getDate() +
         "-" +
@@ -354,7 +371,7 @@ module.exports = () => {
       const comments = {
         id: count,
         text: text,
-        author: author[0].email,
+        author: userEmail,
         date_comment: date_comment,
       };
       const results = await db.update(

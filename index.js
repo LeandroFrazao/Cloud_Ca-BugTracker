@@ -29,7 +29,7 @@ app.use((req, res, next) => {
   console.log("[%s] %s -- %s", new Date(), "Method: ", req.method, req.url);
   next();
 });
-const { login } = require("./user/token");
+const { login } = require("./user/login");
 //const { accessLevel } = require("./user/auth");
 const { register, confirmation } = require("./user/register");
 
@@ -68,9 +68,14 @@ const { auth, accessLevel } = require("./user/auth");
 app.post("/login", validateLogin, login);
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       Register NEW USER                                \\\\\\\\\\\\\\\\\\\
+//\\                       /register                                        \\\\\\\\\\\\\\\\\\\
+//\\                                                                        \\\\\\\\\\\\\\\\\\\
+//\\                       Confirmation NEW USER                            \\\\\\\\\\\\\\\\\\\
+//\\                       /verify/ {token sent by email}                   \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 app.post("/register", validateUser, register);
 app.get("/verify/:randomtoken", confirmation);
+
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       ROUTES                                           \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
