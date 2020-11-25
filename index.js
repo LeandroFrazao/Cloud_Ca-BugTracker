@@ -24,13 +24,11 @@ const issuesController = require("./controller/issues")();
 const cookieParser = require("cookie-parser");
 const app = express();
 
-//login
 app.use((req, res, next) => {
   console.log("[%s] %s -- %s", new Date(), "Method: ", req.method, req.url);
   next();
 });
-const { login } = require("./user/token");
-//const { accessLevel } = require("./user/auth");
+const { login } = require("./user/login");
 const { register, confirmation } = require("./user/register");
 
 //variables are loaded with validator to be used on the routes.
@@ -43,11 +41,47 @@ const {
 } = require("./user/validator");
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\                       WEBPAGE                                   \\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+const projects = require("./models/projects")();
+const users = require("./models/users")();
+const issues = require("./models/issues")();
+
+const path = require("path");
+const exphbs = require("express-handlebars");
+
+// Configure express to use handlebars templates
+var hbs = exphbs.create({
+  defaultLayout: "main", //we will be creating this layout shortly
+  extname: "hbs",
+});
+app.set("views", path.join(__dirname, "views"));
+app.engine("hbs", hbs.engine);
+app.set("view engine", "hbs");
+
+//displays our homepage
+// app.get("/", function (req, res) {
+//   res.render("home");
+// });
+// //displays our signup page
+// app.get("/signin", function (req, res) {
+//   res.render("signin");
+// });
+
+// app.get("/", async (req, res) => {
+//   res.render("signin", {
+//     title: "CA2 CBWA",
+//   });
+// });
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       AUTHENTICATION                                   \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const { auth, accessLevel } = require("./user/auth");
+//const issues = require("./models/issues");
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\     In Postman(or similar)                                           \\\\\\\\\\\\\\\\\\\
@@ -65,12 +99,61 @@ const { auth, accessLevel } = require("./user/auth");
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       LOGIN                                            \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-app.post("/login", validateLogin, login);
+
+app.get("/", async function (req, res) {
+  //const { issuesList: result } = await issues.get();
+  // const { projectsList: result } = await projects.get();
+  const { userResult } = await users.get();
+  console.log(userResult);
+  res.render("home", { users: userResult });
+  //  res.sendFile(path.join(__dirname + "/static/login.html"));
+});
+app.get("/login", function (req, res) {
+  res.render("login");
+  //res.sendFile(path.join(__dirname + "/static/login.html"));
+});
+app.get("/register", function (req, res) {
+  res.render("register");
+  //res.sendFile(path.join(__dirname + "/static/login.html"));
+});
+
+app.post("/login", validateLogin, login, function (req, res) {
+  console.log(">>>>>>>", res.error);
+  if (res.error) {
+    res.render("login", { error: res.error });
+  } else {
+    res.render("home", {
+      success: res.success,
+      user: {
+        //name: userResult.name,
+        email: res.user.email,
+        userType: res.user.userType,
+      },
+    });
+  }
+
+  //res.sendFile(path.join(__dirname + "/static/register.html"));
+});
+
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       Register NEW USER                                \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-app.post("/register", validateUser, register);
-app.get("/verify/:randomtoken", confirmation);
+app.post("/register", validateUser, register, function (req, res) {
+  console.log(">>>>>>>", res.error);
+  if (res.error) {
+    res.render("register", { error: res.error });
+  } else {
+    res.render("login", { success: res.success });
+  }
+});
+app.get("/verify/:randomtoken", confirmation, function (req, res) {
+  console.log(">>>>>>>", res.error);
+  if (res.error) {
+    res.render("home", { error: res.error });
+  } else {
+    res.render("home", { success: res.success });
+  }
+});
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //\\                       ROUTES                                           \\\\\\\\\\\\\\\\\\\
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

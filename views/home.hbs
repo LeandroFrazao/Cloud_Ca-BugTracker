@@ -1,0 +1,29 @@
+<!-- views/home.handlebars -->
+{{#if user}}
+  <div class="jumbotron">
+    <h2>BUG TRACKER</h2>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Profile Information</h3>
+    </div>
+    <div class="panel-body">
+      <p>Name: {{users.name}}</p>
+       <p>Email: {{user.email}}</p>
+        <p>User Type: {{user.userType}}</p>
+    </div>
+  </div>
+
+{{else}}
+  <div class="jumbotron">
+       <h2>BUG TRACKER</h2>
+    <p>Log in and view your profile!</p>
+    <p>
+      <a href="/login" class="btn btn-primary btn-lg" role="button">
+        <span class="glyphicon glyphicon-user"></span>
+        Log in!
+      </a>
+    </p>
+  </div>
+
+{{/if}}

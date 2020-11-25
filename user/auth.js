@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const token = require("./token");
+const token = require("./login");
 const users = require("../models/users")();
 
 exports.auth = (req, res, next) => {
@@ -55,7 +55,7 @@ exports.accessLevel = async (req, res, next) => {
       }
       const results = { user: result, Security: "Restrict Access" };
       console.log("Restrict Access");
-      return res.status(200).json(results);
+      return res.status(401).json(results);
     }
     next();
   } catch (error) {

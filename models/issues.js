@@ -127,7 +127,7 @@ module.exports = () => {
   //////////////////////////////////////////////////////////////////////////////////////////
   /////Add new issues to a project individually "{POST} /projects/BOOKS/issues"////////////
   ////////////////////////////////////////////////////////////////////////////////////////
-  const add = async (slug, title, description, status) => {
+  const add = async (slug, title, description, status, dueDate) => {
     console.log(" --- issuesModel.add --- ");
 
     try {
@@ -166,6 +166,7 @@ module.exports = () => {
         project_id: project[0]._id,
         author: authorEmail,
         date_issue: date_issue,
+        dueDate: dueDate,
         comments: [],
       });
       return { result: results.result };
@@ -338,6 +339,8 @@ module.exports = () => {
         error = "IssueNumber (" + issueNumber + ") NOT FOUND!";
         return { error: error };
       }
+      const issue = getIssuesByProject(issueNumber);
+
       const date = new Date();
       const date_comment =
         date.getDate() +

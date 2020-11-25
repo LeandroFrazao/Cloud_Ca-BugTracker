@@ -39,7 +39,7 @@ module.exports = () => {
         }
         // console.log("Compare Key and HashKey, result is: " await userHashKey.compare("123456", users[0].key));  //to check hashKey
       }
-      return { result: users };
+      return { userResult: users };
     } catch (error) {
       return { error: error };
     }
