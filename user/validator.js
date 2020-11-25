@@ -9,7 +9,7 @@ const checkValidation = (req, res, next) => {
 };
 exports.validateLogin = [
   check("email")
-    .normalizeEmail({ remove_dots: false })
+    .normalizeEmail({ gmail_remove_dots: false })
     .notEmpty()
     .withMessage("Email cannot be blank")
     .bail()
@@ -29,7 +29,7 @@ exports.validateUser = [
     .isIn(["admin", "user"])
     .withMessage("userType must be admin or user"),
   check("email")
-    .normalizeEmail({ remove_dots: false })
+    .normalizeEmail({ gmail_remove_dots: false })
     .notEmpty()
     .withMessage("Email cannot be blank")
     .bail()
